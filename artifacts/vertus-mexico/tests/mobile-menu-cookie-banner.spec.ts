@@ -51,10 +51,19 @@ test.describe("mobile navigation @ 390px", () => {
     await expect(hamburger).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("opens overlay with 4 links and ES/EN toggle", async ({ page }) => {
+  test("ES/EN toggle sits in the header; overlay has 4 links", async ({
+    page,
+  }) => {
     await dismissConsent(page);
     await page.goto("/");
     await page.waitForLoadState("networkidle");
+
+    const header = page.locator("header");
+
+    // The language toggle lives in the header (outside the hamburger menu) and
+    // is visible on mobile without opening the menu.
+    await expect(header.getByRole("button", { name: "Español" })).toBeVisible();
+    await expect(header.getByRole("button", { name: "English" })).toBeVisible();
 
     await page.getByTestId("button-mobile-menu").click();
 
@@ -73,13 +82,8 @@ test.describe("mobile navigation @ 390px", () => {
       expect(href, `nav link ${i} should be a section anchor`).toMatch(/^#\w+/);
     }
 
-    // Language toggle inside the overlay.
-    await expect(
-      panel.getByRole("button", { name: "Español" }),
-    ).toBeVisible();
-    await expect(
-      panel.getByRole("button", { name: "English" }),
-    ).toBeVisible();
+    // The toggle is no longer inside the overlay.
+    await expect(panel.getByRole("button", { name: "Español" })).toHaveCount(0);
   });
 
   test("clicking a link closes the menu and scrolls to the section", async ({

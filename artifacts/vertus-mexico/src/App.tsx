@@ -31,220 +31,160 @@ import MexicoMap from "./components/MexicoMap";
 
 const CookieConsent = lazy(() => import("./components/cookie-consent"));
 
-// ── Testimonial avatar (photo with silhouette fallback) ─────────────────────
-function TestimonialAvatar({
-  photoUrl,
-  slotHint,
-  size = 54,
-}: {
-  photoUrl?: string;
-  slotHint: string;
-  size?: number;
-}) {
-  const [failed, setFailed] = useState(false);
-  const px = `${size}px`;
-  if (photoUrl && !failed) {
-    return (
-      <img
-        src={photoUrl}
-        alt={slotHint}
-        loading="lazy"
-        width={size}
-        height={size}
-        onError={() => setFailed(true)}
-        style={{
-          width: px,
-          height: px,
-          flex: "none",
-          objectFit: "cover",
-          border: "1px solid var(--th-card-border,#2A4A2A)",
-          borderRadius: "999px",
-          display: "block",
-        }}
-      />
-    );
-  }
-  const icon = Math.round(size * 0.44);
-  return (
-    <div
-      role="img"
-      aria-label={slotHint}
-      style={{
-        width: px,
-        height: px,
-        flex: "none",
-        border: "1px solid var(--th-card-border,#2A4A2A)",
-        borderRadius: "999px",
-        background:
-          "linear-gradient(135deg,rgba(139,197,63,.18),rgba(21,38,21,.35))",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <svg
-        width={icon}
-        height={icon}
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="9" r="4" stroke="#8BC53F" strokeWidth="1.5" />
-        <path
-          d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"
-          stroke="#8BC53F"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    </div>
-  );
-}
+// ── Testimonial card (featured + supporting variants) ────────────────────────
+// Reworked per the "We're here to stay" design handoff: a faint forest-green
+// company-logo watermark, a big serif opening-quote mark behind the text, and
+// a name/role split. Fluid sizing uses container-query (cqw) units — the
+// testimonials wrapper sets `container-type: inline-size`.
+const TESTIMONIAL_WATERMARKS: Record<
+  string,
+  { url: string; opacity: number }
+> = {
+  "vx-test-nadia": { url: "/assets/logo-magnusmode-forest.png", opacity: 0.14 },
+  "vx-test-gilray": { url: "/assets/logo-cast-forest.png", opacity: 0.16 },
+  "vx-test-joe": { url: "/assets/logo-vizergy-forest.png", opacity: 0.14 },
+};
 
-// ── Company logo (optional clickable link to the company website) ────────────
-function TestimonialLogo({
-  q,
-  size = 26,
-  lang,
-}: {
-  q: Testimonial;
-  size?: number;
-  lang: "es" | "en";
-}) {
-  if (!q.logoUrl) return null;
-  const visit = lang === "es" ? "visitar sitio web" : "visit website";
-  const logoH = q.logoHeight ?? size;
-  const img = (
-    <img
-      src={q.logoUrl}
-      alt={q.logoAlt || ""}
-      loading="lazy"
-      style={{
-        height: `${logoH}px`,
-        width: "auto",
-        maxWidth: "240px",
-        objectFit: "contain",
-        display: "block",
-      }}
-    />
-  );
-  if (!q.companyUrl) return img;
-  return (
-    <a
-      href={q.companyUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={q.logoAlt ? `${q.logoAlt} — ${visit}` : visit}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        opacity: 0.88,
-        transition: "opacity .2s",
-        flex: "none",
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-      onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.88")}
-    >
-      {img}
-    </a>
-  );
-}
-
-// ── Testimonial card (equal + featured variants) ─────────────────────────────
 function TestimonialCard({
   q,
   featured = false,
-  lang,
 }: {
   q: Testimonial;
   featured?: boolean;
-  lang: "es" | "en";
 }) {
+  const parts = q.name.split(" · ");
+  const name = parts[0];
+  const role = parts[1] ?? "";
+  const watermark = TESTIMONIAL_WATERMARKS[q.slotId];
+  const attrStyle: CSSProperties = {
+    fontFamily: "'Prompt',sans-serif",
+    fontWeight: 500,
+    fontSize: featured ? "15px" : "14px",
+    lineHeight: 1.5,
+    color: "#33402F",
+    textTransform: "uppercase",
+    letterSpacing: ".05em",
+  };
+  const attribution = (
+    <span style={attrStyle}>
+      <strong style={{ fontWeight: 700 }}>{name}</strong>
+      <br />
+      <span style={{ color: "#6A7360" }}>{role}</span>
+    </span>
+  );
   return (
     <figure
       style={{
-        border: "1px solid var(--th-card-border,#2A4A2A)",
-        borderRadius: "13px",
-        padding: featured ? "clamp(30px,3vw,46px)" : "clamp(26px,2.2vw,34px)",
-        background: "var(--th-card-bg,#163016)",
+        position: "relative",
+        overflow: "hidden",
+        border: "1px solid rgba(26,46,26,.16)",
+        borderRadius: "18px",
+        background: "rgba(255,255,255,.55)",
         margin: 0,
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        padding: featured
+          ? "clamp(28px,6cqw,52px) clamp(24px,6cqw,56px)"
+          : "clamp(26px,6cqw,40px) clamp(24px,6cqw,42px)",
       }}
     >
-      <span
+      {watermark && (
+        <img
+          src={watermark.url}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          style={{
+            position: "absolute",
+            top: featured ? "34px" : "28px",
+            right: featured ? "clamp(-12px,4cqw,32px)" : "24px",
+            width: featured ? "min(520px,56cqw)" : "min(300px,50cqw)",
+            height: "auto",
+            opacity: watermark.opacity,
+            pointerEvents: "none",
+          }}
+        />
+      )}
+      <div
         style={{
-          alignSelf: "flex-start",
-          fontFamily: "'Prompt',sans-serif",
-          fontWeight: 500,
-          fontSize: "12px",
-          letterSpacing: ".12em",
-          textTransform: "uppercase",
-          color: "#1A2E1A",
-          background: "#8BC53F",
-          borderRadius: "999px",
-          padding: "4px 10px",
-          marginBottom: "20px",
-          opacity: 0.9,
-        }}
-      >
-        {q.tag}
-      </span>
-      <blockquote
-        style={{
-          fontFamily: "'Newsreader',Georgia,serif",
-          fontStyle: "normal",
-          fontWeight: 500,
-          fontSize: featured ? "clamp(22px,2.2vw,28px)" : "20px",
-          lineHeight: 1.45,
-          color: "var(--th-quote,#D9E0D9)",
-          margin: "0 0 24px",
-          maxWidth: featured ? "48ch" : undefined,
-        }}
-      >
-        {q.quote}
-      </blockquote>
-      <figcaption
-        style={{
+          position: "relative",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "16px",
-          marginTop: "auto",
-          flexWrap: "wrap",
+          flexDirection: "column",
+          height: "100%",
+          paddingTop: featured
+            ? "clamp(60px,14cqw,88px)"
+            : "clamp(50px,12cqw,72px)",
         }}
       >
         <span
+          aria-hidden="true"
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "14px",
-            minWidth: 0,
+            position: "absolute",
+            left: featured
+              ? "clamp(-47px,calc(45px - 8.6cqw),-10px)"
+              : "clamp(-31px,calc(30px - 5.69cqw),-12px)",
+            top: featured
+              ? "clamp(-22px,calc(59px - 7.58cqw),22px)"
+              : "clamp(-18px,calc(51px - 6.4cqw),8px)",
+            fontFamily: "Georgia,serif",
+            fontSize: featured
+              ? "clamp(150px,42cqw,400px)"
+              : "min(320px,44cqw)",
+            lineHeight: 1,
+            color: "#8BC53F",
+            opacity: 0.22,
+            zIndex: 0,
+            pointerEvents: "none",
+            width: "148px",
+            height: "151px",
           }}
         >
-          {q.photoUrl && (
-            <TestimonialAvatar
-              photoUrl={q.photoUrl}
-              slotHint={q.slotHint}
-              size={featured ? 64 : 54}
-            />
-          )}
-          <span
-            style={{
-              fontFamily: "'Prompt',sans-serif",
-              fontWeight: 500,
-              fontSize: "12.5px",
-              letterSpacing: ".04em",
-              color: "var(--th-muted,#AFBEAF)",
-              lineHeight: 1.4,
-            }}
-          >
-            {q.name}
-          </span>
+          {"“"}
         </span>
-        <TestimonialLogo q={q} size={featured ? 30 : 26} lang={lang} />
-      </figcaption>
+        <blockquote
+          style={{
+            position: "relative",
+            zIndex: 1,
+            fontFamily: "'Newsreader',Georgia,serif",
+            fontWeight: 500,
+            fontSize: featured
+              ? "clamp(21px,4.6cqw,29px)"
+              : "clamp(17px,4.4cqw,20px)",
+            lineHeight: featured ? 1.42 : 1.5,
+            color: "#2A3A26",
+            margin: featured ? "0 0 32px" : "0 0 28px",
+          }}
+        >
+          {q.quote}
+        </blockquote>
+        {featured ? (
+          <figcaption
+            style={{ display: "flex", alignItems: "center", gap: "16px" }}
+          >
+            {q.photoUrl && (
+              <img
+                src={q.photoUrl}
+                alt={name}
+                loading="lazy"
+                width={60}
+                height={60}
+                style={{
+                  width: "60px",
+                  height: "60px",
+                  borderRadius: "999px",
+                  objectFit: "cover",
+                  filter: "grayscale(1)",
+                  flex: "none",
+                }}
+              />
+            )}
+            {attribution}
+          </figcaption>
+        ) : (
+          <div style={{ marginTop: "auto" }}>{attribution}</div>
+        )}
+      </div>
     </figure>
   );
 }
@@ -768,7 +708,44 @@ export default function App() {
           />
         </a>
         {isNarrow ? (
-          <button
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flex: "none",
+            }}
+          >
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                border: "1px solid #2A4A2A",
+                borderRadius: "999px",
+                overflow: "hidden",
+                flex: "none",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => changeLang("es")}
+                aria-pressed={lang === "es"}
+                aria-label="Español"
+                style={langBtn(lang === "es")}
+              >
+                {c.langES}
+              </button>
+              <button
+                type="button"
+                onClick={() => changeLang("en")}
+                aria-pressed={lang === "en"}
+                aria-label="English"
+                style={langBtn(lang === "en")}
+              >
+                {c.langEN}
+              </button>
+            </span>
+            <button
             type="button"
             ref={menuButtonRef}
             onClick={() => setMenuOpen((v) => !v)}
@@ -815,6 +792,7 @@ export default function App() {
               )}
             </svg>
           </button>
+          </div>
         ) : (
           <nav
             aria-label={c.navLabel}
@@ -939,50 +917,6 @@ export default function App() {
               {c.ctaStart}
             </a>
           </nav>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "14px",
-              padding: "8px clamp(20px,6vw,40px) 40px",
-            }}
-          >
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                border: "1px solid #2A4A2A",
-                borderRadius: "999px",
-                overflow: "hidden",
-                flex: "none",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  changeLang("es");
-                  setMenuOpen(false);
-                }}
-                aria-pressed={lang === "es"}
-                aria-label="Español"
-                style={{ ...langBtn(lang === "es"), padding: "10px 20px" }}
-              >
-                {c.langES}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  changeLang("en");
-                  setMenuOpen(false);
-                }}
-                aria-pressed={lang === "en"}
-                aria-label="English"
-                style={{ ...langBtn(lang === "en"), padding: "10px 20px" }}
-              >
-                {c.langEN}
-              </button>
-            </span>
-          </div>
         </div>
       )}
       <main id="main-content">
@@ -1389,25 +1323,29 @@ export default function App() {
                 {c.mxBody}
               </p>
               <div
-                style={{ display: "grid", gap: "18px", marginTop: "36px" }}
+                style={{
+                  containerType: "inline-size",
+                  marginTop: "44px",
+                }}
               >
                 {c.testimonials
                   .filter((q) => q.slotId === "vx-test-nadia")
                   .map((q) => (
-                    <TestimonialCard key={q.slotId} q={q} featured lang={lang} />
+                    <TestimonialCard key={q.slotId} q={q} featured />
                   ))}
                 <div
                   style={{
                     display: "grid",
                     gridTemplateColumns:
-                      "repeat(auto-fit,minmax(280px,1fr))",
-                    gap: "18px",
+                      "repeat(auto-fit,minmax(260px,1fr))",
+                    gap: "24px",
+                    marginTop: "24px",
                   }}
                 >
                   {c.testimonials
                     .filter((q) => q.slotId !== "vx-test-nadia")
                     .map((q) => (
-                      <TestimonialCard key={q.slotId} q={q} lang={lang} />
+                      <TestimonialCard key={q.slotId} q={q} />
                     ))}
                 </div>
               </div>

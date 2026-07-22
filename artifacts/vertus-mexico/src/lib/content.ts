@@ -232,7 +232,7 @@ export const CONTENT: Record<Lang, Content> = {
         quote:
           "Magnusmode se construyó sobre la convicción de que la accesibilidad es esencial, no opcional. Unirse a Vertus le permite a Magnusmode seguir impulsando esa misión mientras amplía su alcance, fortalece su tecnología y escala sin comprometer sus valores.",
         name: "Nadia Hamilton · Fundadora, Magnusmode",
-        photoUrl: "/assets/founder-nadia.png",
+        photoUrl: "/assets/avatar-nadia.png",
         logoUrl: "/assets/logo-magnusmode-big.png",
         logoAlt: "Magnusmode",
         logoHeight: 40,
@@ -495,7 +495,7 @@ export const CONTENT: Record<Lang, Content> = {
         quote:
           "Magnusmode was built on the belief that accessibility is essential, not optional. Joining Vertus allows Magnusmode to continue advancing that mission while expanding reach, strengthening technology, and scaling without compromising its values.",
         name: "Nadia Hamilton · Founder, Magnusmode",
-        photoUrl: "/assets/founder-nadia.png",
+        photoUrl: "/assets/avatar-nadia.png",
         logoUrl: "/assets/logo-magnusmode-big.png",
         logoAlt: "Magnusmode",
         logoHeight: 40,
