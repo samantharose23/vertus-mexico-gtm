@@ -55,11 +55,7 @@
   font-display: swap;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
+/* Nav / anchor clicks jump instantly to the section (no smooth scroll). */
 
 body {
   margin: 0;

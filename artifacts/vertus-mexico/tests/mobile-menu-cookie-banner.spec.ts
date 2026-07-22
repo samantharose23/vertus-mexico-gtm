@@ -16,7 +16,7 @@ import { test, expect, type Page } from "@playwright/test";
  */
 
 const CONSENT_STORAGE_KEY = "vertus_consent";
-const NAV_LINK_COUNT = 5;
+const NAV_LINK_COUNT = 4;
 
 /** Pre-seed consent so the cookie banner never overlays the menu tests. */
 async function dismissConsent(page: Page) {
@@ -51,7 +51,7 @@ test.describe("mobile navigation @ 390px", () => {
     await expect(hamburger).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("opens overlay with 5 links and ES/EN toggle", async ({ page }) => {
+  test("opens overlay with 4 links and ES/EN toggle", async ({ page }) => {
     await dismissConsent(page);
     await page.goto("/");
     await page.waitForLoadState("networkidle");
@@ -64,7 +64,7 @@ test.describe("mobile navigation @ 390px", () => {
       page.getByTestId("button-mobile-menu"),
     ).toHaveAttribute("aria-expanded", "true");
 
-    // Exactly 5 section links inside the overlay.
+    // Exactly 4 section links inside the overlay.
     const links = panel.locator("nav a.vx-navlink");
     await expect(links).toHaveCount(NAV_LINK_COUNT);
     for (let i = 0; i < NAV_LINK_COUNT; i++) {
@@ -241,7 +241,7 @@ test.describe("desktop navigation @ 1024px", () => {
     await expect(page.getByTestId("button-mobile-menu")).toHaveCount(0);
     await expect(page.getByTestId("panel-mobile-menu")).toHaveCount(0);
 
-    // 5 section links + the plain-text Contact link.
+    // 4 section links + the plain-text Contact link.
     const DESKTOP_NAV_LINK_COUNT = NAV_LINK_COUNT + 1;
     const links = page.locator("header nav a.vx-navlink");
     await expect(links).toHaveCount(DESKTOP_NAV_LINK_COUNT);

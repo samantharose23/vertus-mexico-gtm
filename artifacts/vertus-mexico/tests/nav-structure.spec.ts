@@ -4,8 +4,8 @@ import { test, expect, type Page } from "@playwright/test";
  * Guards the Task #86 nav + section-order restructuring.
  *
  * Nav (both languages):
- *   - exactly 6 section links, in order:
- *     #permanece, #capital, #mexico, #fundadores, #enfoque, #contacto
+ *   - exactly 5 section links, in order:
+ *     #permanece, #capital, #mexico, #fundadores, #contacto
  *   - the Contact link is a plain text nav link (styled like the others,
  *     no button/pill), visible at all desktop widths
  *   - the logo links back to the hero (#top)
@@ -22,25 +22,22 @@ const EXPECTED_NAV_HREFS = [
   "#capital",
   "#mexico",
   "#fundadores",
-  "#enfoque",
   "#contacto",
 ];
 
 const EXPECTED_LABELS: Record<string, string[]> = {
   es: [
     "Lo que permanece",
-    "Por qué Vertus",
-    "Establecidos en México",
+    "Por qué el capital permanente",
+    "Equipo",
     "Para fundadores",
-    "Nuestro enfoque",
     "Contacto",
   ],
   en: [
     "What stays the same",
-    "Why Vertus",
-    "Established in Mexico",
+    "Why permanent capital",
+    "Team",
     "For founders",
-    "Our approach",
     "Contact",
   ],
 };
@@ -61,7 +58,7 @@ test.describe("desktop nav structure @ 1280px", () => {
   test.use({ viewport: { width: 1280, height: 720 } });
 
   for (const lang of ["es", "en"] as const) {
-    test(`6 links in order incl. plain-text Contact link (${lang})`, async ({
+    test(`5 links in order incl. plain-text Contact link (${lang})`, async ({
       page,
     }) => {
       await dismissConsent(page);
@@ -110,7 +107,7 @@ test.describe("desktop nav structure @ 1280px", () => {
     await expect(cta).toBeVisible();
     const header = page.locator("header");
     const box = await header.boundingBox();
-    expect(box!.height).toBeLessThan(80);
+    expect(box!.height).toBeLessThan(90);
   });
 });
 

@@ -194,7 +194,7 @@ function TestimonialCard({
       <blockquote
         style={{
           fontFamily: "'Newsreader',Georgia,serif",
-          fontStyle: "italic",
+          fontStyle: "normal",
           fontWeight: 500,
           fontSize: featured ? "clamp(22px,2.2vw,28px)" : "20px",
           lineHeight: 1.45,
@@ -764,7 +764,7 @@ export default function App() {
           <img
             src="/assets/vertus-logo.png"
             alt="Vertus Group Mexico"
-            style={{ height: "52px", width: "auto", display: "block" }}
+            style={{ height: "68px", width: "auto", display: "block" }}
           />
         </a>
         {isNarrow ? (
@@ -2418,35 +2418,10 @@ export default function App() {
               <div
                 style={{
                   position: "relative",
-                  maxWidth: isNarrow ? "320px" : "400px",
+                  maxWidth: isNarrow ? "360px" : "480px",
                   margin: isNarrow ? "0 auto" : undefined,
-                  padding: "14px",
                 }}
               >
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "56px",
-                    height: "56px",
-                    borderTop: "2px solid #1A2E1A",
-                    borderLeft: "2px solid #1A2E1A",
-                  }}
-                />
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    right: 0,
-                    width: "56px",
-                    height: "56px",
-                    borderBottom: "2px solid #1A2E1A",
-                    borderRight: "2px solid #1A2E1A",
-                  }}
-                />
                 <img
                   src={mariaPhoto}
                   alt={`${c.mariaFirst} ${c.mariaLast} — ${c.mariaRole}`}
@@ -2456,7 +2431,6 @@ export default function App() {
                     display: "block",
                     borderRadius: "13px",
                     filter: "grayscale(1)",
-                    border: "1px solid var(--th-card-border,rgba(26,46,26,.22))",
                   }}
                 />
               </div>
@@ -2582,7 +2556,7 @@ export default function App() {
               zIndex: 2,
               padding: "clamp(56px,8vw,96px) clamp(20px,7vw,110px)",
               scrollMarginTop: "70px",
-              background: "var(--th-bg,#152615)",
+              background: "#8BC53F",
               overflow: "hidden",
             }}
           >
@@ -2633,9 +2607,10 @@ export default function App() {
                       fontWeight: 600,
                       fontSize: "14px",
                       letterSpacing: ".03em",
-                      color: "var(--th-head,#E8E3D2)",
+                      color: "#E8E3D2",
                       textDecoration: "none",
-                      border: "1px solid var(--th-line,#2A4A2A)",
+                      background: "#1A2E1A",
+                      border: "1px solid #2A4A2A",
                       borderRadius: "22px",
                       padding: "0 24px",
                       height: "50px",
@@ -2670,6 +2645,7 @@ export default function App() {
                   borderRadius: "16px",
                   padding: "clamp(26px,2.6vw,40px)",
                   background: "#163016",
+                  boxShadow: "0 18px 44px rgba(6,14,6,0.30)",
                 }}
               >
                 <div
@@ -2884,7 +2860,7 @@ export default function App() {
                         fontSize: "15px",
                         letterSpacing: ".04em",
                         color: "#1A2E1A",
-                        background: "#E8E3D2",
+                        background: "#8BC53F",
                         border: "none",
                         borderRadius: "22px",
                         padding: "0 30px",
@@ -2947,10 +2923,10 @@ export default function App() {
         >
           <div style={{ maxWidth: "54ch" }}>
             <img
-              src="/assets/vertus-logo.png"
-              alt="Vertus Group Mexico"
+              src="/assets/vertus-icon.png"
+              alt="Vertus"
               style={{
-                height: "44px",
+                height: "56px",
                 width: "auto",
                 display: "block",
                 marginBottom: "22px",
