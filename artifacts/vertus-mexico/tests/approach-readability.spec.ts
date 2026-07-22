@@ -1,17 +1,16 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Guards readability of the enlarged "Nuestro enfoque" Fibonacci square
- * animation on smaller laptop screens.
+ * Guards readability of the scroll-driven "Nuestro enfoque" stepper on
+ * smaller laptop screens.
  *
- * The animation stage was enlarged to min(96vw,1500px) x min(88vh,1000px)
- * with the focused square at 0.72 of the field's min dimension and bigger
- * text clamps. It was verified at 1440x900 / 1920x1080, but small laptops
- * (~1280x720, ~1024x768) still run the animated mode with tight vertical
- * space. This spec drives the scroll-linked animation to each step's exact
- * focus position and fails if the focused card's number, title, or body text
- * clips against the card (the card has overflow:hidden, so any overflow is
- * silently truncated), or if the page develops horizontal scroll.
+ * The animated mode pins a sticky stage while the camera zooms through eight
+ * Fibonacci squares; the active step's title + description sit in a card in
+ * the right-hand column. It was verified at 1440x900 / 1920x1080, but small
+ * laptops (~1280x720, ~1024x768) still run the animated mode with tight
+ * vertical space. This spec drives the scroll-linked animation to each step's
+ * settle position and fails if the active card's title or body text lands
+ * outside the viewport (clipped), or if the page develops horizontal scroll.
  *
  * Spanish copy is the longest, but both languages are checked.
  */
@@ -22,10 +21,18 @@ const VIEWPORTS = [
 ] as const;
 const LANGS = ["es", "en"] as const;
 
-// The card padding is clamp(24px,3vw,48px); require at least this much
-// clearance between text and the card edge so "fits" also means "not cramped".
-const MIN_CLEARANCE = 12;
+// Require the text to sit at least this far inside the viewport edges so
+// "fits" also means "not cramped against the edge".
+const MIN_CLEARANCE = 8;
 const TOL = 1;
+
+// Mirrors scrollForIndex() in the stepper driver: the scroll fraction that
+// settles the camera on step i (last step lands at 0.95).
+const PROG_END = 0.9;
+function fracForStep(i: number, lastIdx: number): number {
+  if (i >= lastIdx) return 0.95;
+  return ((i + 0.22) / lastIdx) * PROG_END;
+}
 
 type StepIssue = { step: number; part: string; reason: string };
 
@@ -34,7 +41,7 @@ for (const vp of VIEWPORTS) {
     test.use({ viewport: { width: vp.width, height: vp.height } });
 
     for (const lang of LANGS) {
-      test(`focused squares stay readable (${lang})`, async ({ page }) => {
+      test(`active step card stays readable (${lang})`, async ({ page }) => {
         // This spec pins its own laptop viewports, so running it again under
         // the "mobile" project would only duplicate the identical desktop run.
         test.skip(
@@ -43,112 +50,140 @@ for (const vp of VIEWPORTS) {
         );
         await page.goto(`/?lang=${lang}`);
         await page.waitForLoadState("networkidle");
-        // Let the deferred ScrollTrigger.refresh() (300ms after init) settle.
+        // The page sets scroll-behavior: smooth; programmatic scrolls must
+        // land instantly so the sticky stage is pinned before we measure.
+        await page.addStyleTag({
+          content: "*{scroll-behavior:auto !important}",
+        });
+        // Let the stepper's initial render() settle after mount.
         await page.waitForTimeout(600);
 
         // Animated mode must be active at these widths (grid fallback would
         // make this spec vacuous).
-        const cards = page.locator("[data-sq-card]");
-        const n = await cards.count();
+        const driver = page.locator("[data-ap-driver]");
         expect(
-          n,
+          await driver.count(),
           `Animated approach mode should be active at ${vp.width}px`,
-        ).toBeGreaterThan(1);
+        ).toBe(1);
 
-        // Resolve the scroll track: card -> field -> sticky stage -> track.
-        const track = await page.evaluate(() => {
-          const card = document.querySelector<HTMLElement>("[data-sq-card]");
-          const trackEl =
-            card?.parentElement?.parentElement?.parentElement || null;
-          if (!trackEl) return null;
-          const r = trackEl.getBoundingClientRect();
-          return {
-            top: r.top + window.scrollY,
-            height: r.height,
-          };
+        const info = await page.evaluate(() => {
+          const el = document.querySelector<HTMLElement>("[data-ap-driver]");
+          if (!el) return null;
+          const r = el.getBoundingClientRect();
+          const cards = el.querySelectorAll("[data-ap-card]").length;
+          return { top: r.top + window.scrollY, height: r.height, cards };
         });
-        expect(track, "approach scroll track should exist").not.toBeNull();
-        if (!track) return;
+        expect(info, "approach scroll track should exist").not.toBeNull();
+        if (!info) return;
+
+        const n = info.cards;
+        expect(n, "stepper should have cards").toBeGreaterThan(1);
+        const scrollRange = info.height - vp.height;
+        expect(
+          scrollRange,
+          "track must be taller than the viewport",
+        ).toBeGreaterThan(0);
 
         const issues: StepIssue[] = [];
         let sawHScroll = false;
 
         for (let i = 0; i < n; i++) {
-          // ScrollTrigger runs start "top top" -> end "bottom bottom", so
-          // progress = (scrollY - trackTop) / (trackHeight - viewportHeight).
-          const frac = i / (n - 1);
-          const targetY =
-            track.top + frac * (track.height - vp.height);
+          const targetY = info.top + fracForStep(i, n - 1) * scrollRange;
           await page.evaluate((y) => window.scrollTo(0, y), targetY);
-          // Text opacity transitions over 250ms; wait for it to settle.
-          await page.waitForTimeout(450);
+
+          // The card fades/blurs in over .55s once the camera settles; poll
+          // until a card reaches full opacity instead of a single fixed wait.
+          await page.waitForTimeout(500);
+          let ready = false;
+          for (let t = 0; t < 8; t++) {
+            const op = await page.evaluate(() => {
+              const cards = Array.from(
+                document.querySelectorAll<HTMLElement>("[data-ap-card]"),
+              );
+              return Math.max(
+                ...cards.map((c) => Number(getComputedStyle(c).opacity)),
+              );
+            });
+            if (op >= 0.99) {
+              ready = true;
+              break;
+            }
+            await page.waitForTimeout(250);
+          }
+          if (!ready) {
+            issues.push({
+              step: i,
+              part: "card",
+              reason: "no card reached full opacity at this step",
+            });
+            continue;
+          }
 
           const result = await page.evaluate(
             ({ step, minClear, tol }) => {
-              const issues: { step: number; part: string; reason: string }[] =
-                [];
-              const all = Array.from(
-                document.querySelectorAll<HTMLElement>("[data-sq-card]"),
+              const issues: {
+                step: number;
+                part: string;
+                reason: string;
+              }[] = [];
+              const cards = Array.from(
+                document.querySelectorAll<HTMLElement>("[data-ap-card]"),
               );
-              // The focused card is the largest one on screen.
-              let focused: HTMLElement | null = null;
-              let maxW = 0;
-              for (const el of all) {
-                const w = el.getBoundingClientRect().width;
-                if (w > maxW) {
-                  maxW = w;
-                  focused = el;
-                }
-              }
-              if (!focused) {
+              // The visible card is the one that has faded in.
+              const visible = cards.find(
+                (c) => Number(getComputedStyle(c).opacity) >= 0.99,
+              );
+              if (!visible) {
                 issues.push({
                   step,
                   part: "card",
-                  reason: "no focused card found",
+                  reason: "no visible card found",
                 });
                 return { issues, hScroll: false };
               }
-              const card = focused.getBoundingClientRect();
+              const vw = document.documentElement.clientWidth;
+              const vh = document.documentElement.clientHeight;
               const parts: [string, string][] = [
-                ["number", "[data-sq-num]"],
-                ["title", "[data-sq-title]"],
-                ["body", "[data-sq-body]"],
+                ["title", "h2"],
+                ["body", "p"],
               ];
               for (const [name, sel] of parts) {
-                const el = focused.querySelector<HTMLElement>(sel);
-                if (!el) {
-                  issues.push({ step, part: name, reason: "missing element" });
-                  continue;
-                }
-                // On the focused card every text tier must be shown.
-                if (el.style.opacity !== "" && el.style.opacity !== "1") {
+                const el = visible.querySelector<HTMLElement>(sel);
+                if (!el || !el.textContent?.trim()) {
                   issues.push({
                     step,
                     part: name,
-                    reason: `hidden on focused card (opacity ${el.style.opacity})`,
+                    reason: "missing element or empty text",
                   });
                   continue;
                 }
                 const r = el.getBoundingClientRect();
-                if (r.bottom > card.bottom - minClear + tol) {
+                if (r.left < minClear - tol) {
                   issues.push({
                     step,
                     part: name,
-                    reason: `bottom ${r.bottom.toFixed(1)}px too close to card bottom ${card.bottom.toFixed(1)}px (needs ${minClear}px clearance; card overflow:hidden clips it)`,
+                    reason: `left ${r.left.toFixed(1)}px clipped past viewport edge`,
                   });
                 }
-                if (r.right > card.right - minClear + tol) {
+                if (r.right > vw - minClear + tol) {
                   issues.push({
                     step,
                     part: name,
-                    reason: `right ${r.right.toFixed(1)}px too close to card right ${card.right.toFixed(1)}px (needs ${minClear}px clearance)`,
+                    reason: `right ${r.right.toFixed(1)}px past viewport width ${vw}px`,
                   });
                 }
-                if (r.top < card.top + minClear - tol) {
+                if (r.top < minClear - tol) {
                   issues.push({
                     step,
                     part: name,
-                    reason: `top ${r.top.toFixed(1)}px above safe area of card top ${card.top.toFixed(1)}px`,
+                    reason: `top ${r.top.toFixed(1)}px clipped above viewport`,
+                  });
+                }
+                if (r.bottom > vh - minClear + tol) {
+                  issues.push({
+                    step,
+                    part: name,
+                    reason: `bottom ${r.bottom.toFixed(1)}px below viewport height ${vh}px`,
                   });
                 }
               }
@@ -175,7 +210,7 @@ for (const vp of VIEWPORTS) {
 
         expect(
           issues.length,
-          `Focused approach squares clipped or hid text at ${vp.width}x${vp.height} (${lang}):\n${details}`,
+          `Active approach card clipped text at ${vp.width}x${vp.height} (${lang}):\n${details}`,
         ).toBe(0);
       });
     }

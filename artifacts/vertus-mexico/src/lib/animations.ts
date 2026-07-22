@@ -309,331 +309,294 @@ export function initFloat(): () => void {
   };
 }
 
-// ── Lock-step scroll engine ─────────────────────────────────────────────────
-function setupLockStep(
-  st: ScrollTrigger,
-  N: number,
-): () => void {
-  const g = gsap;
-  if (!st || !N || N < 2) return () => {};
-  const N1 = N - 1;
-  const DUR = 0.4,
-    COOLDOWN = 70;
-  const proxy = { y: 0 };
-  let animating = false;
-
-  const segTo = (i: number) => {
-    const s = st.start != null ? st.start : 0;
-    const e = st.end != null ? st.end : s;
-    return s + (Math.max(0, Math.min(N1, i)) / N1) * (e - s);
-  };
-  const curStep = () =>
-    Math.round(Math.max(0, Math.min(1, st.progress || 0)) * N1);
-  const go = (target: number) => {
-    animating = true;
-    proxy.y =
-      window.pageYOffset || document.documentElement.scrollTop || 0;
-    const toY = segTo(target);
-    try {
-      g.killTweensOf(proxy);
-    } catch {
-      /* noop */
-    }
-    g.to(proxy, {
-      y: toY,
-      duration: DUR,
-      ease: "power2.out",
-      onUpdate() {
-        window.scrollTo(0, proxy.y);
-      },
-      onComplete() {
-        window.scrollTo(0, toY);
-        window.setTimeout(() => {
-          animating = false;
-        }, COOLDOWN);
-      },
-    });
-  };
-  const step = (dir: number) => {
-    if (!st.isActive || !dir) return false;
-    if (animating) return true;
-    const target = curStep() + dir;
-    if (target < 0 || target > N1) return false;
-    go(target);
-    return true;
-  };
-
-  const onWheel = (e: WheelEvent) => {
-    if (!st.isActive) return;
-    if (animating) {
-      e.preventDefault();
-      return;
-    }
-    if (Math.abs(e.deltaY) < 3) return;
-    if (step(e.deltaY > 0 ? 1 : -1)) e.preventDefault();
-  };
-  let touchY: number | null = null;
-  const onTouchStart = (e: TouchEvent) => {
-    touchY = e.touches && e.touches[0] ? e.touches[0].clientY : null;
-  };
-  const onTouchMove = (e: TouchEvent) => {
-    if (!st.isActive || touchY == null) return;
-    if (animating) {
-      e.preventDefault();
-      return;
-    }
-    const yy = e.touches && e.touches[0] ? e.touches[0].clientY : null;
-    if (yy == null) return;
-    const dy = touchY - yy;
-    if (Math.abs(dy) < 10) return;
-    if (step(dy > 0 ? 1 : -1)) {
-      touchY = yy;
-      e.preventDefault();
-    }
-  };
-  const onTouchEnd = () => {
-    touchY = null;
-  };
-  const onKey = (e: KeyboardEvent) => {
-    if (!st.isActive) return;
-    let dir = 0;
-    if (
-      e.key === "ArrowDown" ||
-      e.key === "PageDown" ||
-      e.key === " " ||
-      e.key === "Spacebar"
-    )
-      dir = 1;
-    else if (e.key === "ArrowUp" || e.key === "PageUp") dir = -1;
-    else return;
-    if (animating) {
-      e.preventDefault();
-      return;
-    }
-    if (step(dir)) e.preventDefault();
-  };
-
-  window.addEventListener("wheel", onWheel, { passive: false });
-  window.addEventListener("touchstart", onTouchStart, { passive: true });
-  window.addEventListener("touchmove", onTouchMove, { passive: false });
-  window.addEventListener("touchend", onTouchEnd, { passive: true });
-  window.addEventListener("keydown", onKey);
-
-  return () => {
-    window.removeEventListener("wheel", onWheel);
-    window.removeEventListener("touchstart", onTouchStart);
-    window.removeEventListener("touchmove", onTouchMove);
-    window.removeEventListener("touchend", onTouchEnd);
-    window.removeEventListener("keydown", onKey);
-    try {
-      g.killTweensOf(proxy);
-    } catch {
-      /* noop */
-    }
-  };
-}
-
-// ── Fibonacci-square build-up (approach) ────────────────────────────────────
-type Anchor = "fixed" | "grow";
-
-interface SquaresHandle {
-  cleanup: () => void;
+// ── Our Approach — scroll-driven Fibonacci-spiral stepper ───────────────────
+// Ported from the "our-approach-vanilla" design export. A sticky section pins
+// while the camera zooms INWARD through eight golden-ratio squares (one per
+// step). React renders the square/rail/card nodes (with the step content, so
+// it stays bilingual); this driver positions the squares and animates the
+// camera, rail state, and per-step cards as the visitor scrolls.
+export interface StepperHandle {
   ok: boolean;
+  cleanup: () => void;
   jumpTo: (i: number) => void;
 }
 
-export function initApproachSquares(
-  track: HTMLElement,
-  field: HTMLElement,
-  anchor: Anchor,
-): SquaresHandle {
-  const reduce = prefersReduced();
-  if (reduce) return { cleanup: () => {}, ok: false, jumpTo: () => {} };
-
-  const g = gsap,
-    ST = ScrollTrigger;
-  g.registerPlugin(ST);
-  const cards = Array.prototype.slice.call(
-    field.querySelectorAll("[data-sq-card]"),
-  ) as HTMLElement[];
-  if (!cards.length)
-    return { cleanup: () => {}, ok: false, jumpTo: () => {} };
-
-  // Scroll-cue hint: fully visible at the start of the sequence, fades out
-  // as soon as the visitor advances (style-only mutation, no reparenting).
-  const hint = track.querySelector("[data-sq-hint]") as HTMLElement | null;
-  const applyHint = (p: number) => {
-    if (!hint) return;
-    const o = Math.max(0, Math.min(1, 1 - (p - 0.02) / 0.08));
-    hint.style.opacity = o.toFixed(2);
+export function initApproachStepper(
+  root: HTMLElement,
+  stepCount: number,
+): StepperHandle {
+  const noop: StepperHandle = {
+    ok: false,
+    cleanup: () => {},
+    jumpTo: () => {},
   };
+  if (prefersReduced()) return noop;
+  if (!root || stepCount < 2) return noop;
 
-  const sqN = cards.length;
-  const N = sqN;
+  const board = root.querySelector("[data-ap-board]") as HTMLElement | null;
+  const squareEls = Array.prototype.slice.call(
+    root.querySelectorAll("[data-ap-square]"),
+  ) as HTMLElement[];
+  const railRows = Array.prototype.slice.call(
+    root.querySelectorAll("[data-ap-rail-row]"),
+  ) as HTMLElement[];
+  const cardEls = Array.prototype.slice.call(
+    root.querySelectorAll("[data-ap-card]"),
+  ) as HTMLElement[];
+  const hint = root.querySelector("[data-ap-hint]") as HTMLElement | null;
 
-  const fib = [1, 1];
-  while (fib.length < N) fib.push(fib[fib.length - 1] + fib[fib.length - 2]);
-  const sides = ["right", "bottom", "left", "top"] as const;
-  const box = { L: 0, T: 0, R: fib[0], B: fib[0] };
-  const sq = [{ x: 0, y: 0, s: fib[0] }];
-  const boxes = [{ L: box.L, T: box.T, R: box.R, B: box.B }];
-  for (let i = 1; i < N; i++) {
-    const s = fib[i];
-    const side = sides[(i - 1) % 4];
-    if (side === "right") {
-      sq.push({ x: box.R, y: box.T, s });
-      box.R += s;
-    } else if (side === "bottom") {
-      sq.push({ x: box.L, y: box.B, s });
-      box.B += s;
-    } else if (side === "left") {
-      sq.push({ x: box.L - s, y: box.T, s });
-      box.L -= s;
-    } else {
-      sq.push({ x: box.L, y: box.T - s, s });
-      box.T -= s;
-    }
-    boxes.push({ L: box.L, T: box.T, R: box.R, B: box.B });
+  const N = stepCount;
+  const lastIdx = N - 1;
+
+  // Spiral geometry below is hand-authored for exactly eight squares. If the
+  // step count ever changes, fall back to the static grid rather than render a
+  // broken spiral.
+  const FIB = [1, 1, 2, 3, 5, 8, 13, 21]; // square sizes (Fibonacci units)
+  if (
+    N !== FIB.length ||
+    !board ||
+    squareEls.length !== N ||
+    cardEls.length !== N
+  ) {
+    return noop;
   }
 
-  const clampNum = (v: number, lo: number, hi: number) =>
+  const ACCENT = "#8BC53F";
+  const K = 200; // px per Fibonacci unit
+  const PLACE = [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 0, y: -2 },
+    { x: -3, y: -2 },
+    { x: -3, y: 1 },
+    { x: 2, y: -2 },
+    { x: -3, y: -15 },
+    { x: -24, y: -15 },
+  ]; // spiral positions
+  const ORDER = [7, 6, 5, 4, 3, 2, 1, 0]; // step 1 = outermost (largest) square
+  const FILL = 1.08; // active square fills this × min(vw,vh)
+  const ANCHOR_X = 0.52; // horizontal anchor for the active number
+  const HOLD_A = 0.4,
+    HOLD_B = 0.6; // dwell below A / arrive above B / snap between
+  const PROG_END = 0.9; // scroll fraction at which the last step is reached
+  const TINTS = [
+    "rgba(255,255,255,0.02)",
+    "rgba(0,0,0,0.12)",
+    "rgba(139,197,63,0.03)",
+    "rgba(255,255,255,0.015)",
+  ];
+
+  const lerp = (a: number, b: number, u: number) => a + (b - a) * u;
+  const clampN = (v: number, lo: number, hi: number) =>
     Math.max(lo, Math.min(hi, v));
 
-  const setSquareTier = (el: HTMLElement, size: number, target: number) => {
-    const r = size / (target || 1);
-    const inner = el.querySelector("[data-sq-inner]") as HTMLElement | null;
-    const num = el.querySelector("[data-sq-num]") as HTMLElement | null;
-    const title = el.querySelector("[data-sq-title]") as HTMLElement | null;
-    const body = el.querySelector("[data-sq-body]") as HTMLElement | null;
-    if (num) num.style.opacity = r >= 0.24 ? "1" : "0";
-    if (title) title.style.opacity = r >= 0.42 ? "1" : "0";
-    if (body) body.style.opacity = r >= 0.72 ? "1" : "0";
-    // Scale padding + typography from the card's own current pixel size
-    // (rather than independent viewport-width units) so text always fits
-    // inside the card at every point in the animation, on any screen size.
-    if (inner) inner.style.padding = clampNum(size * 0.09, 8, 36) + "px";
-    if (num) num.style.fontSize = clampNum(size * 0.16, 14, 52) + "px";
-    if (title) title.style.fontSize = clampNum(size * 0.1, 13, 30) + "px";
-    if (body) body.style.fontSize = clampNum(size * 0.055, 12, 16) + "px";
-  };
-
-  const applySquares = (p: number) => {
-    const vw = window.innerWidth || 1;
-    const vh = window.innerHeight || 1;
-    const FW = Math.min(field.clientWidth || 1, vw);
-    const FH = Math.min(field.clientHeight || 1, vh);
-    const TARGET = Math.min(FW, FH) * 0.58;
-    const rawP = Math.min(1, Math.max(0, p)) * (N - 1);
-    const k = Math.min(N - 2, Math.floor(rawP));
-    const f = rawP - k;
-    const ef = f * f * f * (f * (f * 6 - 15) + 10);
-    const effIndex = rawP >= N - 1 ? N - 1 : k + ef;
-    const kk = Math.min(N - 1, Math.floor(effIndex));
-    let effSide: number;
-    if (kk >= N - 1) effSide = fib[N - 1];
-    else {
-      const fr = effIndex - kk;
-      effSide = fib[kk] * Math.pow(fib[kk + 1] / fib[kk], fr);
-    }
-    const scale = TARGET / effSide;
-
-    let ox: number, oy: number;
-    if (anchor === "fixed") {
-      const cx = (i: number) => sq[i].x + fib[i] / 2;
-      const cy = (i: number) => sq[i].y + fib[i] / 2;
-      if (kk >= N - 1) {
-        ox = cx(N - 1);
-        oy = cy(N - 1);
-      } else {
-        const fr = effIndex - kk;
-        ox = cx(kk) + (cx(kk + 1) - cx(kk)) * fr;
-        oy = cy(kk) + (cy(kk + 1) - cy(kk)) * fr;
-      }
-    } else {
-      const bx = (i: number) => (boxes[i].L + boxes[i].R) / 2;
-      const by = (i: number) => (boxes[i].T + boxes[i].B) / 2;
-      if (kk >= N - 1) {
-        ox = bx(N - 1);
-        oy = by(N - 1);
-      } else {
-        const fr = effIndex - kk;
-        ox = bx(kk) + (bx(kk + 1) - bx(kk)) * fr;
-        oy = by(kk) + (by(kk + 1) - by(kk)) * fr;
-      }
-    }
-
-    const apx = FW / 2,
-      apy = FH / 2;
-    for (let j = 0; j < N; j++) {
-      const el = cards[j];
-      const size = fib[j] * scale;
-      const sx = apx + (sq[j].x - ox) * scale;
-      const sy = apy + (sq[j].y - oy) * scale;
-      const op = Math.max(0, Math.min(1, effIndex - j + 1));
-      el.style.width = size.toFixed(1) + "px";
-      el.style.height = size.toFixed(1) + "px";
-      el.style.transform =
-        "translate(" + sx.toFixed(1) + "px," + sy.toFixed(1) + "px)";
-      el.style.opacity = op.toFixed(3);
-      el.style.zIndex = String(100 + j);
-      el.style.pointerEvents = op < 0.05 ? "none" : "auto";
-      el.style.borderColor = size >= TARGET * 0.86 ? "#4C7A38" : "#2A4A2A";
-      setSquareTier(el, size, TARGET);
-    }
-  };
-
-  // Progress-only ScrollTrigger. The visible stage is held in place with CSS
-  // `position: sticky` in the markup rather than GSAP's `pin`, so GSAP never
-  // reparents a React-owned node into a `.pin-spacer` (which desyncs React's
-  // DOM tree and throws "removeChild ... not a child of this node").
-  const st = ST.create({
-    trigger: track,
-    start: "top top",
-    end: "bottom bottom",
-    onUpdate: (self) => {
-      applySquares(self.progress);
-      applyHint(self.progress);
-    },
-    onRefresh: (self) => {
-      applySquares(self.progress);
-      applyHint(self.progress);
-    },
+  // Each step -> a spiral square (centre in Fibonacci units).
+  const SQ = Array.from({ length: N }, (_, i) => {
+    const k = ORDER[i];
+    const s = FIB[k];
+    const pl = PLACE[k];
+    return { s, cx: pl.x + s / 2, cy: pl.y + s / 2, gx: pl.x, gy: pl.y };
   });
-  applySquares(0);
-  applyHint(0);
-  const lockCleanup = setupLockStep(st, N);
-  const refreshT = window.setTimeout(() => {
-    try {
-      ST.refresh();
-    } catch {
-      /* noop */
+
+  // Size + position the (React-rendered) square nodes once.
+  squareEls.forEach((el, i) => {
+    const q = SQ[i];
+    el.style.left = q.gx * K + "px";
+    el.style.top = q.gy * K + "px";
+    el.style.width = q.s * K + "px";
+    el.style.height = q.s * K + "px";
+    el.style.background = TINTS[i % TINTS.length];
+    const span = el.querySelector("[data-ap-num]") as HTMLElement | null;
+    if (span) span.style.fontSize = q.s * K * 0.6 + "px";
+  });
+
+  // ── State ───────────────────────────────────────────────────────────────
+  let progress = 0; // 0..1 scroll through the driver section
+  let anim: { from: number; to: number; u: number } | null = null;
+  let suppressScroll = false;
+  let fIdxDisplayed = 0;
+  let rafPending = false;
+
+  // Map scroll progress -> effective index with a dwell/snap plateau.
+  const plateauIndex = (p: number) => {
+    const raw = clampN((p / PROG_END) * lastIdx, 0, lastIdx);
+    const seg = Math.min(lastIdx - 1, Math.floor(raw));
+    const fr = raw - seg;
+    let sm =
+      fr <= HOLD_A ? 0 : fr >= HOLD_B ? 1 : (fr - HOLD_A) / (HOLD_B - HOLD_A);
+    if (sm > 0 && sm < 1) sm = sm * sm * (3 - 2 * sm); // smoothstep the snap
+    return { fIdx: seg + sm, settled: sm <= 0 || sm >= 1 };
+  };
+
+  const render = () => {
+    const p = progress;
+    const pl = plateauIndex(p);
+    const animating = !!anim;
+
+    // Effective index: during a jump, ease from -> to through the spiral.
+    const effIdx = animating ? lerp(anim!.from, anim!.to, anim!.u) : pl.fIdx;
+    fIdxDisplayed = effIdx;
+    const active = animating
+      ? anim!.to
+      : clampN(Math.round(pl.fIdx), 0, lastIdx);
+
+    // Camera: frame the square at effIdx, zoom inward as the index grows.
+    const W = window.innerWidth,
+      H = window.innerHeight;
+    const j0 = clampN(Math.floor(effIdx), 0, lastIdx);
+    const j1 = Math.min(lastIdx, j0 + 1);
+    const jt = effIdx - j0;
+    const cx = lerp(SQ[j0].cx, SQ[j1].cx, jt);
+    const cy = lerp(SQ[j0].cy, SQ[j1].cy, jt);
+    const S = lerp(SQ[j0].s, SQ[j1].s, jt);
+    const camScale = (FILL * Math.min(W, H)) / (S * K);
+    const tx = W * ANCHOR_X - camScale * (cx * K);
+    const ty = H * 0.5 - camScale * (cy * K);
+    board!.style.transition = animating ? "none" : "transform .12s linear";
+    board!.style.transform =
+      "translate(" + tx + "px," + ty + "px) scale(" + camScale + ")";
+
+    // Square number brightness + border strengthen near the focused index.
+    for (let i = 0; i < squareEls.length; i++) {
+      const strong = Math.max(0, 1 - Math.abs(i - effIdx));
+      const num = squareEls[i].querySelector(
+        "[data-ap-num]",
+      ) as HTMLElement | null;
+      if (num)
+        num.style.color =
+          "rgba(139,197,63," + (0.05 + strong * 0.21).toFixed(3) + ")";
+      squareEls[i].style.borderColor =
+        "rgba(167,213,111," + (0.05 + strong * 0.1).toFixed(3) + ")";
     }
-  }, 300);
+
+    // Rail: done / active / upcoming states.
+    for (let r = 0; r < railRows.length; r++) {
+      const st = r < active ? "done" : r === active ? "active" : "up";
+      const box = railRows[r].querySelector(
+        "[data-ap-rail-box]",
+      ) as HTMLElement | null;
+      const label = railRows[r].querySelector(
+        "[data-ap-rail-label]",
+      ) as HTMLElement | null;
+      if (!box || !label) continue;
+      if (st === "active") {
+        box.style.background = ACCENT;
+        box.style.color = "#151515";
+        box.style.border = "1px solid " + ACCENT;
+        box.style.transform = "scale(1.5)";
+        box.style.boxShadow = "0 0 0 5px rgba(139,197,63,.16)";
+        label.style.font = "700 16px 'Prompt',sans-serif";
+        label.style.color = "#E8E3D2";
+        label.style.letterSpacing = ".08em";
+        label.style.textTransform = "uppercase";
+      } else {
+        box.style.background = st === "done" ? "transparent" : "#152615";
+        box.style.color =
+          st === "done" ? "rgba(232,227,210,.62)" : "rgba(232,227,210,.4)";
+        box.style.border =
+          "1px solid " +
+          (st === "done" ? "rgba(139,197,63,.38)" : "rgba(232,227,210,.16)");
+        box.style.transform = "scale(1)";
+        box.style.boxShadow = "none";
+        label.style.font = "500 13px 'Prompt',sans-serif";
+        label.style.color =
+          st === "done" ? "rgba(232,227,210,.6)" : "rgba(232,227,210,.34)";
+        label.style.letterSpacing = ".1em";
+        label.style.textTransform = "uppercase";
+      }
+    }
+
+    // Cards: only the active one shows, and only once movement has SETTLED
+    // (and not mid-jump), so no text flashes while the numbers move.
+    const showActive = pl.settled && !animating;
+    for (let cI = 0; cI < cardEls.length; cI++) {
+      const show = showActive && cI === active;
+      const off = show ? 0 : 34;
+      cardEls[cI].style.opacity = show ? "1" : "0";
+      cardEls[cI].style.filter = show ? "blur(0px)" : "blur(7px)";
+      cardEls[cI].style.pointerEvents = show ? "auto" : "none";
+      cardEls[cI].style.transform =
+        "translateY(-50%) translateX(" + off + "px)";
+    }
+
+    if (hint) hint.style.opacity = p < 0.02 ? "1" : "0";
+  };
+
+  // ── Scroll ────────────────────────────────────────────────────────────────
+  const readProgress = () => {
+    const rect = root.getBoundingClientRect();
+    const scrollable = rect.height - window.innerHeight;
+    return scrollable > 0 ? clampN(-rect.top / scrollable, 0, 1) : 0;
+  };
+  const onScroll = () => {
+    if (suppressScroll || anim) return;
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+      rafPending = false;
+      progress = readProgress();
+      render();
+    });
+  };
+  const onResize = () => {
+    progress = readProgress();
+    render();
+  };
+
+  // Scroll position (px) that centres a given step.
+  const scrollForIndex = (i: number) => {
+    const rect = root.getBoundingClientRect();
+    const top = rect.top + window.scrollY;
+    const scrollable = root.offsetHeight - window.innerHeight;
+    let pp = lastIdx > 0 ? ((i + 0.22) / lastIdx) * PROG_END : 0;
+    if (i >= lastIdx) pp = 0.95;
+    return Math.round(top + clampN(pp, 0, 1) * scrollable);
+  };
+
+  // Rail click: animate the camera through the numbers to the target (like
+  // scrolling), then silently sync the scroll position.
+  const jumpTo = (i: number) => {
+    const from = fIdxDisplayed;
+    if (Math.abs(from - i) < 0.01) return;
+    const dist = Math.abs(i - from);
+    const DUR = Math.min(1700, 340 + 190 * dist);
+    const start = performance.now();
+    const easeInOut = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    anim = { from, to: i, u: 0 };
+
+    const tick = () => {
+      const u = Math.min(1, (performance.now() - start) / DUR);
+      anim!.u = easeInOut(u);
+      render();
+      if (u < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        // Land: sync scroll silently, then release so normal scrolling resumes.
+        suppressScroll = true;
+        window.scrollTo(0, scrollForIndex(i));
+        anim = null;
+        requestAnimationFrame(() => {
+          suppressScroll = false;
+          progress = readProgress();
+          render();
+        });
+      }
+    };
+    requestAnimationFrame(tick);
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onResize);
+  progress = readProgress();
+  render();
 
   return {
     ok: true,
-    jumpTo: (i: number) => {
-      const frac = N > 1 ? Math.max(0, Math.min(N - 1, i)) / (N - 1) : 0;
-      const s = st.start != null ? st.start : 0;
-      const e = st.end != null ? st.end : s;
-      const target = s + frac * (e - s);
-      window.scrollTo({
-        top: target,
-        behavior: prefersReduced() ? "auto" : "smooth",
-      });
-    },
+    jumpTo,
     cleanup: () => {
-      clearTimeout(refreshT);
-      try {
-        lockCleanup();
-      } catch {
-        /* noop */
-      }
-      try {
-        st.kill();
-      } catch {
-        /* noop */
-      }
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     },
   };
 }

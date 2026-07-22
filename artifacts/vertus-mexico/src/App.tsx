@@ -22,7 +22,7 @@ import { applySeo } from "./lib/seo";
 import { trackEvent } from "./lib/analytics";
 import { captureAttribution, getAttribution } from "./lib/attribution";
 import {
-  initApproachSquares,
+  initApproachStepper,
   initFibTiles,
   initFloat,
   refreshScrollTriggers,
@@ -392,11 +392,10 @@ export default function App() {
   const emailRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const hpRef = useRef<HTMLInputElement>(null);
-  const squaresStageRef = useRef<HTMLDivElement>(null);
-  const squaresFieldRef = useRef<HTMLDivElement>(null);
+  const stepperRootRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
-  const squaresHandleRef = useRef<ReturnType<typeof initApproachSquares> | null>(
+  const stepperHandleRef = useRef<ReturnType<typeof initApproachStepper> | null>(
     null,
   );
 
@@ -405,10 +404,11 @@ export default function App() {
   const showApproachGrid = reduced || isNarrow || approachForceGrid;
 
   // Scroll-track height for the approach section. The stage is held via CSS
-  // `position: sticky`, so this track's extra height defines the pin duration
-  // and must stay in sync with the ScrollTrigger range.
+  // `position: sticky`, so this track's extra height (added to the 100vh stage)
+  // defines how much scroll the stepper spans. ~420vh of travel for 8 steps
+  // matches the design export's 520vh driver.
   const approachEndPct = useMemo(
-    () => Math.max(160, Math.round((c.steps.length - 1) * 42)),
+    () => Math.max(360, Math.round(c.steps.length * 52)),
     [c.steps.length],
   );
 
@@ -537,29 +537,30 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Approach squares — re-init when layout mode / language changes
+  // Approach stepper — re-init when layout mode changes. The rail/card text is
+  // React-owned (updated in place on language switch), so the driver's node
+  // references stay valid without a re-init.
   useLayoutEffect(() => {
     if (showApproachGrid) return;
-    const track = squaresStageRef.current;
-    const field = squaresFieldRef.current;
-    if (!track || !field) return;
-    const handle = initApproachSquares(track, field, "grow");
-    squaresHandleRef.current = handle;
+    const root = stepperRootRef.current;
+    if (!root) return;
+    const handle = initApproachStepper(root, c.steps.length);
+    stepperHandleRef.current = handle;
     if (!handle.ok) {
       setApproachForceGrid(true);
       handle.cleanup();
-      squaresHandleRef.current = null;
+      stepperHandleRef.current = null;
       return;
     }
     return () => {
       handle.cleanup();
-      squaresHandleRef.current = null;
+      stepperHandleRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showApproachGrid, isNarrow, reduced]);
+  }, [showApproachGrid, isNarrow, reduced, lang]);
 
   const jumpToCard = useCallback((i: number) => {
-    squaresHandleRef.current?.jumpTo(i);
+    stepperHandleRef.current?.jumpTo(i);
   }, []);
 
   const onSubmit = useCallback(
@@ -1973,9 +1974,11 @@ export default function App() {
 
           {!showApproachGrid && (
             <div
-              ref={squaresStageRef}
+              ref={stepperRootRef}
+              data-ap-driver="true"
               style={{
                 position: "relative",
+                zIndex: 2,
                 height: `${100 + approachEndPct}vh`,
               }}
             >
@@ -1984,151 +1987,141 @@ export default function App() {
                   position: "sticky",
                   top: 0,
                   height: "100vh",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "0 clamp(16px,3vw,48px)",
                   overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
+                {/* Fibonacci board — the camera zooms through these squares */}
                 <div
-                  ref={squaresFieldRef}
+                  aria-hidden="true"
                   style={{
-                    position: "relative",
-                    width: "min(90vw,1200px)",
-                    height: "min(70vh,720px)",
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 0,
+                    overflow: "hidden",
+                    pointerEvents: "none",
                   }}
                 >
-                {c.steps.map((s, i) => (
                   <div
-                    key={i}
-                    data-sq-card="true"
-                    data-index={i}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`${s.n}. ${s.title}`}
-                    className="vx-sqcard"
-                    onClick={() => jumpToCard(i)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        jumpToCard(i);
-                      }
-                    }}
+                    data-ap-board="true"
+                    className="vx-ap-board"
                     style={{
                       position: "absolute",
                       left: 0,
                       top: 0,
-                      width: "120px",
-                      height: "120px",
-                      border: "1px solid #2A4A2A",
-                      borderRadius: 0,
-                      background: "#163016",
-                      boxSizing: "border-box",
-                      overflow: "hidden",
-                      cursor: "pointer",
-                      opacity: 0,
-                      transform: "translate(-9999px,-9999px)",
-                      willChange: "transform,width,height,opacity",
+                      width: 0,
+                      height: 0,
+                      transformOrigin: "0 0",
+                      willChange: "transform",
                     }}
                   >
-                    <div
-                      data-sq-inner="true"
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        padding: "12px",
-                        display: "flex",
-                        flexDirection: "column",
-                        boxSizing: "border-box",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <span
-                        data-sq-num="true"
-                        style={{
-                          fontFamily: "Georgia,serif",
-                          fontWeight: 900,
-                          fontSize: "16px",
-                          letterSpacing: "-0.03em",
-                          color: "#8BC53F",
-                          lineHeight: 1,
-                          display: "block",
-                          transition:
-                            "opacity .25s cubic-bezier(0.22,0.61,0.36,1)",
-                        }}
+                    {c.steps.map((s, i) => (
+                      <div
+                        key={i}
+                        data-ap-square="true"
+                        data-index={i}
+                        className="vx-ap-square"
                       >
-                        {s.n}
-                      </span>
-                      <h3
-                        data-sq-title="true"
-                        style={{
-                          fontFamily: "'Newsreader',Georgia,serif",
-                          fontWeight: 600,
-                          fontSize: "14px",
-                          letterSpacing: "-0.01em",
-                          color: "#E8E3D2",
-                          margin: "10px 0 0",
-                          lineHeight: 1.2,
-                          transition:
-                            "opacity .25s cubic-bezier(0.22,0.61,0.36,1)",
-                        }}
-                      >
-                        {s.title}
-                      </h3>
-                      <p
-                        data-sq-body="true"
-                        style={{
-                          fontFamily: "'Lato',sans-serif",
-                          fontSize: "13px",
-                          lineHeight: 1.55,
-                          color: "#AFBEAF",
-                          margin: "8px 0 0",
-                          transition:
-                            "opacity .25s cubic-bezier(0.22,0.61,0.36,1)",
-                        }}
-                      >
-                        {s.body}
-                      </p>
-                    </div>
+                        <span data-ap-num="true">
+                          {s.n.padStart(2, "0")}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
                 </div>
+
+                {/* Left-in scrim so numbers fade into the section edge */}
                 <div
-                  data-sq-hint="true"
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 1,
+                    pointerEvents: "none",
+                    background:
+                      "linear-gradient(to right,#1A2E1A 0%,#1A2E1A 12%,rgba(26,46,26,0) 22%)",
+                  }}
+                />
+
+                {/* Rail (clickable step index) + active-step card */}
+                <div className="vx-ap-grid">
+                  <div className="vx-ap-rail" data-ap-rail="true">
+                    {c.steps.map((s, i) => (
+                      <div
+                        key={i}
+                        className="vx-ap-rail-row"
+                        data-ap-rail-row="true"
+                        data-index={i}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${s.n}. ${s.title}`}
+                        onClick={() => jumpToCard(i)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            jumpToCard(i);
+                          }
+                        }}
+                      >
+                        <div className="vx-ap-rail-box" data-ap-rail-box="true">
+                          {s.n.padStart(2, "0")}
+                        </div>
+                        <div
+                          className="vx-ap-rail-label"
+                          data-ap-rail-label="true"
+                        >
+                          {s.title}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="vx-ap-cards" data-ap-cards="true">
+                    {c.steps.map((s, i) => (
+                      <div
+                        key={i}
+                        className="vx-ap-card"
+                        data-ap-card="true"
+                        data-index={i}
+                        style={{ opacity: 0, filter: "blur(7px)" }}
+                      >
+                        <h2>{s.title}</h2>
+                        <p>{s.body}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Keep-scrolling hint (fades out once the visitor advances) */}
+                <div
+                  data-ap-hint="true"
                   className="vx-sqhint"
                   aria-hidden="true"
                   style={{
                     position: "absolute",
-                    bottom: "clamp(18px,4vh,40px)",
-                    left: 0,
-                    right: 0,
+                    bottom: "28px",
+                    right: "clamp(20px,6vw,90px)",
+                    zIndex: 3,
                     display: "flex",
-                    flexDirection: "column",
                     alignItems: "center",
-                    gap: "6px",
+                    gap: "10px",
                     pointerEvents: "none",
-                    transition: "opacity .35s ease",
+                    transition: "opacity .5s ease",
                   }}
                 >
                   <span
                     style={{
                       fontFamily: "'Prompt',sans-serif",
-                      fontWeight: 500,
                       fontSize: "12px",
                       letterSpacing: ".12em",
                       textTransform: "uppercase",
-                      color: "#AFBEAF",
+                      color: "#9AAA9A",
                     }}
                   >
                     {c.appScrollHint}
                   </span>
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M6 9l6 6 6-6"
                       stroke="#8BC53F"

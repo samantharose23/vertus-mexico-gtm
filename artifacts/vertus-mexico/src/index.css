@@ -223,3 +223,120 @@ textarea::placeholder {
     animation: vx-hint-bob 1.8s ease-in-out infinite;
   }
 }
+
+/* ── Our Approach — scroll-driven Fibonacci stepper ───────────────────────── */
+.vx-ap-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: clamp(40px, 6vw, 90px);
+  align-items: center;
+  padding: 0 clamp(20px, 6vw, 90px);
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.vx-ap-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 8px 0;
+}
+.vx-ap-rail-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  cursor: pointer;
+}
+.vx-ap-rail-row:focus-visible {
+  outline: 2px solid #8bc53f;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.vx-ap-rail-box {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Georgia, "Newsreader", serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  transform-origin: center center;
+  transition:
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.45s ease,
+    border-color 0.45s ease,
+    color 0.45s ease;
+}
+.vx-ap-rail-label {
+  font-family: "Prompt", sans-serif;
+  white-space: nowrap;
+  transition:
+    color 0.45s ease,
+    font-size 0.45s ease;
+}
+.vx-ap-cards {
+  position: relative;
+  height: clamp(420px, 52vh, 600px);
+}
+.vx-ap-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.vx-ap-card h2 {
+  font-family: "Newsreader", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(30px, 3.4vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  color: #e8e3d2;
+  max-width: 12ch;
+  text-wrap: balance;
+}
+.vx-ap-card p {
+  font-family: "Lato", sans-serif;
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.65;
+  color: #9aaa9a;
+  margin: 0;
+  max-width: 30ch;
+  text-wrap: pretty;
+}
+.vx-ap-square {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(167, 213, 111, 0.08);
+}
+.vx-ap-square span {
+  font-family: Georgia, serif;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgba(139, 197, 63, 0.14);
+  user-select: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vx-ap-card,
+  .vx-ap-rail-box,
+  .vx-ap-board {
+    transition: none !important;
+  }
+}
