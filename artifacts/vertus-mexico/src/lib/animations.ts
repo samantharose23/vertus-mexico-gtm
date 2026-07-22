@@ -464,9 +464,9 @@ export function initApproachStepper(
       ) as HTMLElement | null;
       if (num)
         num.style.color =
-          "rgba(139,197,63," + (0.05 + strong * 0.21).toFixed(3) + ")";
+          "rgba(139,197,63," + (0.12 + strong * 0.3).toFixed(3) + ")";
       squareEls[i].style.borderColor =
-        "rgba(167,213,111," + (0.14 + strong * 0.2).toFixed(3) + ")";
+        "rgba(167,213,111," + (0.22 + strong * 0.28).toFixed(3) + ")";
     }
 
     // Rail: done / active / upcoming states.

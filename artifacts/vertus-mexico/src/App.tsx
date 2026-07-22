@@ -722,7 +722,7 @@ export default function App() {
             style={{
               position: "absolute",
               inset: 0,
-              opacity: 0.45,
+              opacity: 0.62,
               transform: "rotate(1.5deg)",
               transformOrigin: "50% 50%",
             }}
@@ -1002,84 +1002,71 @@ export default function App() {
           }}
         >
           <div style={heroGridStyle}>
-            <div>
-              <div
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "9px",
+                marginBottom: "22px",
+              }}
+            >
+              <span
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "9px",
-                  marginBottom: "26px",
+                  ...eyebrowText,
+                  color: "#8BC53F",
+                  marginLeft: "5px",
                 }}
               >
-                <span
-                  style={{
-                    ...eyebrowText,
-                    color: "#8BC53F",
-                    marginLeft: "5px",
-                  }}
-                >
-                  {c.heroEyebrow}
-                </span>
-              </div>
-              <h1
-                style={{
-                  fontFamily: "Georgia,'Newsreader',serif",
-                  fontWeight: 900,
-                  fontSize: "clamp(32px,6vw,116px)",
-                  lineHeight: 1.02,
-                  letterSpacing: "-0.03em",
-                  color: "#E8E3D2",
-                  margin: 0,
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {c.heroTitle}
-              </h1>
-              <a
-                href="#contacto"
-                className="vx-cta"
-                style={{ ...ctaBase, marginTop: "clamp(30px,2.5vw,46px)" }}
-              >
-                {c.ctaStart}
-              </a>
+                {c.heroEyebrow}
+              </span>
             </div>
-          </div>
-          <div
-            style={{
-              position: "relative",
-              zIndex: 2,
-              width: "100%",
-              maxWidth: "1240px",
-              margin: "0 auto",
-            }}
-          >
+            <h1
+              style={{
+                fontFamily: "Georgia,'Newsreader',serif",
+                fontWeight: 900,
+                fontSize: "clamp(32px,6vw,116px)",
+                lineHeight: 1.02,
+                letterSpacing: "-0.03em",
+                color: "#E8E3D2",
+                margin: 0,
+                whiteSpace: "pre-line",
+              }}
+            >
+              {c.heroTitle}
+            </h1>
             <p
               style={{
                 fontFamily: "'Lato',sans-serif",
                 fontSize: "clamp(17px,1.15vw,22px)",
                 lineHeight: 1.7,
                 color: "#E8E3D2",
-                margin: "clamp(32px,4.5vh,56px) 0 0",
+                margin: "clamp(24px,3vh,36px) 0 0",
                 maxWidth: "36em",
               }}
             >
               {c.heroLead}
             </p>
-            <div style={{ paddingBottom: "8px" }}>
-              <p
-                style={{
-                  fontFamily: "'Lato',sans-serif",
-                  fontSize: "clamp(13.5px,0.85vw,16px)",
-                  lineHeight: 1.6,
-                  color: "#B7C4B7",
-                  margin: "26px 0 0",
-                  paddingTop: "22px",
-                  borderTop: "1px solid #2A4A2A",
-                }}
-              >
-                {c.heroParent}
-              </p>
-            </div>
+            <a
+              href="#contacto"
+              className="vx-cta"
+              style={{ ...ctaBase, marginTop: "clamp(28px,3vh,42px)" }}
+            >
+              {c.ctaStart}
+            </a>
+            <p
+              style={{
+                fontFamily: "'Lato',sans-serif",
+                fontSize: "clamp(13.5px,0.85vw,16px)",
+                lineHeight: 1.6,
+                color: "#B7C4B7",
+                margin: "clamp(40px,6vh,64px) 0 0",
+                paddingTop: "22px",
+                borderTop: "1px solid #2A4A2A",
+                maxWidth: "60ch",
+              }}
+            >
+              {c.heroParent}
+            </p>
           </div>
         </section>
 
@@ -1161,9 +1148,13 @@ export default function App() {
                         fontFamily: "'Newsreader',Georgia,serif",
                         fontWeight: 600,
                         fontSize: "25px",
+                        lineHeight: 1.2,
                         letterSpacing: "-0.01em",
                         color: "var(--th-text,#E8E3D2)",
                         margin: "14px 0 14px",
+                        // Reserve two lines so the body copy aligns across the
+                        // row whether a title is one or two lines.
+                        minHeight: "2.4em",
                       }}
                     >
                       {card.title}
@@ -1708,7 +1699,6 @@ export default function App() {
                 ...eyebrowText,
                 color: "#8BC53F",
                 marginBottom: "18px",
-                textAlign: "right",
               }}
             >
               {c.foundEyebrow}
@@ -1722,7 +1712,6 @@ export default function App() {
                 letterSpacing: "-0.01em",
                 color: "#E8E3D2",
                 margin: 0,
-                textAlign: "right",
               }}
             >
               {c.foundTitle}
@@ -1733,9 +1722,8 @@ export default function App() {
                 fontSize: "18px",
                 lineHeight: 1.7,
                 color: "#AFBEAF",
-                margin: "24px 0 0 auto",
+                margin: "24px 0 0",
                 maxWidth: "60ch",
-                textAlign: "right",
               }}
             >
               {c.foundBody}

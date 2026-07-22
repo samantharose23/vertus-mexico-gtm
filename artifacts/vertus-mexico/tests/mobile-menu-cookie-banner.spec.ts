@@ -93,8 +93,8 @@ test.describe("mobile navigation @ 390px", () => {
     const panel = page.getByTestId("panel-mobile-menu");
     await expect(panel).toBeVisible();
 
-    // Click the "Established in Mexico" (#mexico) link — a mid-page section.
-    const link = panel.locator('nav a.vx-navlink[href="#mexico"]');
+    // Click the "Team" (#equipo) link — a mid-page section.
+    const link = panel.locator('nav a.vx-navlink[href="#equipo"]');
     await expect(link).toBeVisible();
     await link.click();
 
@@ -109,11 +109,11 @@ test.describe("mobile navigation @ 390px", () => {
       .poll(
         async () =>
           page.evaluate(() => {
-            const el = document.getElementById("mexico");
+            const el = document.getElementById("equipo");
             if (!el) return Number.POSITIVE_INFINITY;
             return el.getBoundingClientRect().top;
           }),
-        { message: "#mexico section should scroll into view", timeout: 5_000 },
+        { message: "#equipo section should scroll into view", timeout: 5_000 },
       )
       .toBeLessThan(400);
 

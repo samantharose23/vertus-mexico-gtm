@@ -170,10 +170,10 @@ export const CONTENT: Record<Lang, Content> = {
     nav: [
       { label: "Lo que permanece", href: "#permanece" },
       { label: "Por qué el capital permanente", href: "#capital" },
-      { label: "Equipo", href: "#mexico" },
+      { label: "Equipo", href: "#equipo" },
       { label: "Para fundadores", href: "#fundadores" },
     ],
-    heroEyebrow: "Capital permanente · México",
+    heroEyebrow: "Parte de The Vertus Group",
     heroTitle: "Capital permanente\nen México",
     heroLead:
       "Adquirimos empresas consolidadas de software vertical en México y las conservamos de forma permanente. Nunca vendemos nuestras empresas. Solo un hogar estable, a largo plazo.",
@@ -433,10 +433,10 @@ export const CONTENT: Record<Lang, Content> = {
     nav: [
       { label: "What stays the same", href: "#permanece" },
       { label: "Why permanent capital", href: "#capital" },
-      { label: "Team", href: "#mexico" },
+      { label: "Team", href: "#equipo" },
       { label: "For founders", href: "#fundadores" },
     ],
-    heroEyebrow: "Permanent capital · Mexico",
+    heroEyebrow: "Part of The Vertus Group",
     heroTitle: "Permanent Capital\nin Mexico",
     heroLead:
       "We acquire established vertical-market software businesses in Mexico and hold them for good. We never sell our businesses. Just a stable owner for the long term.",

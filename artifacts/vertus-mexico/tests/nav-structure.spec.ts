@@ -5,7 +5,7 @@ import { test, expect, type Page } from "@playwright/test";
  *
  * Nav (both languages):
  *   - exactly 5 section links, in order:
- *     #permanece, #capital, #mexico, #fundadores, #contacto
+ *     #permanece, #capital, #equipo, #fundadores, #contacto
  *   - the Contact link is a plain text nav link (styled like the others,
  *     no button/pill), visible at all desktop widths
  *   - the logo links back to the hero (#top)
@@ -20,7 +20,7 @@ const CONSENT_STORAGE_KEY = "vertus_consent";
 const EXPECTED_NAV_HREFS = [
   "#permanece",
   "#capital",
-  "#mexico",
+  "#equipo",
   "#fundadores",
   "#contacto",
 ];
