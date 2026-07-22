@@ -323,7 +323,7 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 1px solid rgba(167, 213, 111, 0.08);
+  border: 1px solid rgba(167, 213, 111, 0.16);
 }
 .vx-ap-square span {
   font-family: Georgia, serif;

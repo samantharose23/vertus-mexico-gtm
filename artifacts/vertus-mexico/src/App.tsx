@@ -1927,7 +1927,10 @@ export default function App() {
             zIndex: 2,
             scrollMarginTop: "80px",
             borderTop: "1px solid #2A4A2A",
-            background: "rgba(21,38,21,.6)",
+            // Opaque so the fixed global Fibonacci backdrop (#vx-field) doesn't
+            // show through behind the approach card — leaving only the stepper's
+            // own number-zoom visible here. Other sections keep the backdrop.
+            background: "#152615",
           }}
         >
           <div
