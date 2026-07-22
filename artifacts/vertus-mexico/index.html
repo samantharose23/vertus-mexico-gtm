@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google Consent Mode v2 — defaults (deny everywhere until the visitor chooses). MUST stay above the GTM loader. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
+      gtag('set', 'ads_data_redaction', true);
+      /* Replay a returning visitor's stored choice immediately so it lands
+         within the wait_for_update window, before GTM loads. Storage key must
+         stay in sync with CONSENT_STORAGE_KEY in src/components/consent.config.ts. */
+      (function(){
+        try {
+          var raw = localStorage.getItem('vertus_consent');
+          if (!raw) return;
+          var v = JSON.parse(raw);
+          if (v && v.analytics && v.ads) {
+            gtag('consent', 'update', {
+              'analytics_storage': v.analytics,
+              'ad_storage': v.ads,
+              'ad_user_data': v.ads,
+              'ad_personalization': v.ads
+            });
+          }
+        } catch (e) { /* ignore */ }
+      })();
+    </script>
+    <!-- Google Tag Manager — guarded loader. ID comes from the VITE_GTM_ID env var; stays dormant if unset. -->
+    <script>
+      (function(){
+        var GTM_ID = "%VITE_GTM_ID%";
+        if (GTM_ID.indexOf("GTM-") !== 0) return; /* dormant until a real ID is set */
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer',GTM_ID);
+      })();
+    </script>
+    <!-- End Google Tag Manager -->
+    <title>Vertus Group Mexico — Capital permanente en México</title>
+    <meta
+      name="description"
+      content="Adquirimos empresas consolidadas de software vertical en México y las conservamos de forma permanente. Nunca vendemos nuestras empresas — un hogar estable, a largo plazo."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#1A2E1A" />
+    <meta property="og:site_name" content="Vertus Group Mexico" />
+    <meta property="og:title" content="Vertus Group Mexico — Capital permanente en México" />
+    <meta
+      property="og:description"
+      content="Adquirimos empresas consolidadas de software vertical en México y las conservamos de forma permanente. Nunca vendemos nuestras empresas."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/opengraph.jpg" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Vertus Group Mexico — Capital permanente en México" />
+    <meta
+      name="twitter:description"
+      content="Adquirimos empresas consolidadas de software vertical en México y las conservamos de forma permanente."
+    />
+    <meta name="twitter:image" content="/opengraph.jpg" />
+    <link rel="icon" type="image/svg+xml" href="/assets/vertus-icon.svg" />
+    <link rel="apple-touch-icon" href="/assets/vertus-icon.svg" />
+    <link
+      rel="preload"
+      href="/fonts/Prompt-Medium.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Newsreader-VF.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+  </head>
+  <body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=%VITE_GTM_ID%" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

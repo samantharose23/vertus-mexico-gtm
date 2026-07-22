@@ -1,0 +1,8 @@
+- [HubSpot via connectors proxy](hubspot-connector.md) — use `@replit/connectors-sdk` proxy, not `@hubspot/api-client`; server-side only; connection may already be bound (returns 200 without proposeIntegration).
+- [Vertus animation vs React DOM](vertus-dev-noise.md) — "removeChild"/"Invalid hook call" crash = animations mutating React-owned nodes; fix by isolating imperative DOM, don't re-init pinned ScrollTrigger on unused state, add ErrorBoundary.
+- [Public write endpoints need server-side anti-abuse](public-endpoint-hardening.md) — client-only honeypot is bypassable; enforce honeypot + rate limit + length caps on the server.
+- [HubSpot lead attribution properties](hubspot-attribution-properties.md) — free-text landing_page_path + utm_* auto-created on demand; unknown property 400s whole create, so only send confirmed ones.
+- [Playwright port isolation](playwright-port-isolation.md) — concurrent test runs sharing one webServer port kill each other mid-run; pin a per-run port via env var (config re-runs in every worker).
+- [Headline wrap guards](headline-wrap-guards.md) — line-count checks miss removed `\n`/wrong wrap points; assert rendered lines equal authored segments via per-word rects, and mutation-test layout guards.
+- [Workflow rebuild stall](workflow-rebuild-stall.md) — restart_workflow TIMED_OUT "run environment to rebuild" is a platform stall; verify via same-session dev server or deterministic `pnpm build`; never `pkill -f` your own command substring.
+- [Finding the deployed commit](deployed-commit-forensics.md) — no API exposes the live commit; identify it by grepping the live JS bundle for commit-specific string markers, then confirm with a deterministic local build hash.

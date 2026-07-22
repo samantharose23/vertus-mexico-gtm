@@ -1,0 +1,55 @@
+<!--
+  Paste BOTH scripts below into your site's <head>, as early as possible.
+
+  ORDER IS CRITICAL: the Consent Mode defaults script MUST come before the
+  GTM loader (and before any other analytics tag). If GTM loads first, tags
+  can fire before consent is denied by default.
+
+  ═══════════════════════════════════════════════════════════════════════
+  YOUR GTM CONTAINER ID: set the GTM_ID variable below.
+  Replace "GTM-REPLACE_ME" with your new container's ID (e.g. "GTM-AB12CD3").
+  Find it in Google Tag Manager: Admin -> Container ID (top-right, GTM-XXXXXXX).
+
+  Vite users (recommended): set GTM_ID to "%VITE_GTM_ID%" and define
+  VITE_GTM_ID as an env var / secret — then the env var is the single source
+  of truth (the optional body-noscript.html reads the same var) and swapping
+  containers never touches code.
+
+  Not using Vite? This GTM_ID line is the primary spot; if you also use the
+  optional body-noscript.html, put the same ID there too (noscript can't
+  read a JS variable) and keep the two in sync.
+  ═══════════════════════════════════════════════════════════════════════
+
+  SAFETY: the loader only runs when the ID starts with "GTM-". If the ID is
+  missing, still the placeholder, or a typo, GTM simply stays dormant (no
+  network call, no errors) — the banner still works, it just controls nothing.
+  So if you see no traffic in GTM/GA preview, first check the ID was set here.
+-->
+
+<!-- 1. Google Consent Mode v2 — defaults (deny everywhere until the visitor chooses). -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied',
+    'wait_for_update': 500
+  });
+  gtag('set', 'ads_data_redaction', true);
+</script>
+
+<!-- 2. Google Tag Manager — guarded loader. Set your container ID on the GTM_ID line. -->
+<script>
+  (function(){
+    var GTM_ID = "GTM-REPLACE_ME"; /* <<< SET YOUR GTM CONTAINER ID HERE <<< */
+    if (GTM_ID.indexOf("GTM-") !== 0) return; /* dormant until a real ID is set */
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer',GTM_ID);
+  })();
+</script>
+<!-- End Google Tag Manager -->

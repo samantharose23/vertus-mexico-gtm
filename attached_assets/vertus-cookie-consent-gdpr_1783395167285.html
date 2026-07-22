@@ -1,0 +1,181 @@
+<!-- ============================================================= -->
+<!--  VERTUS COOKIE CONSENT — GDPR-ALIGNED, STRICT (deny-everywhere) -->
+<!--  Self-hosted. Nothing non-essential fires until consent.       -->
+<!--  Requires ONE change in GTM (see the notes you were given).    -->
+<!-- ============================================================= -->
+
+
+<!-- ============================================================= -->
+<!--  PART 1  —  CONSENT DEFAULTS (deny everywhere)                 -->
+<!--  Paste in <head>, ABOVE your GTM container snippet.            -->
+<!-- ============================================================= -->
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+
+  // Deny for ALL visitors, no region exceptions, until they choose.
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied',
+    'wait_for_update': 500
+  });
+
+  gtag('set', 'ads_data_redaction', true);
+</script>
+
+<!-- >>> YOUR EXISTING GTM SNIPPET GOES IMMEDIATELY BELOW THIS LINE <<< -->
+
+
+
+<!-- ============================================================= -->
+<!--  PART 2  —  THE BANNER (paste once, before </body>)           -->
+<!-- ============================================================= -->
+
+<style>
+  #vertus-consent{position:fixed;left:0;right:0;bottom:0;z-index:2147483647;
+    display:none;background:#151515;color:#F6F6F6;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    box-shadow:0 -2px 24px rgba(0,0,0,.35)}
+  #vertus-consent.show{display:block}
+  #vertus-consent .vc-inner{max-width:1100px;margin:0 auto;padding:20px 24px}
+  #vertus-consent .vc-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px}
+  #vertus-consent .vc-text{flex:1 1 320px;font-size:14px;line-height:1.5}
+  #vertus-consent .vc-text a{color:#8BC53F;text-decoration:underline}
+  #vertus-consent .vc-actions{display:flex;flex-wrap:wrap;gap:12px;flex:0 0 auto}
+  #vertus-consent button{cursor:pointer;border:0;border-radius:6px;
+    padding:11px 20px;font-size:14px;font-weight:600;font-family:inherit;
+    transition:opacity .15s ease}
+  #vertus-consent button:hover{opacity:.88}
+  #vertus-consent .vc-manage{background:transparent;color:#F6F6F6;
+    border:1px solid #4a4a4a}
+  #vertus-consent .vc-reject{background:transparent;color:#F6F6F6;
+    border:1px solid #4a4a4a}
+  #vertus-consent .vc-accept{background:#8BC53F;color:#151515}
+  /* Preferences panel */
+  #vertus-consent .vc-prefs{display:none;margin-top:18px;
+    border-top:1px solid #333;padding-top:18px}
+  #vertus-consent.prefs-open .vc-prefs{display:block}
+  #vertus-consent .vc-cat{display:flex;align-items:flex-start;gap:12px;
+    padding:10px 0;font-size:14px;line-height:1.45}
+  #vertus-consent .vc-cat input{margin-top:3px;width:16px;height:16px;
+    accent-color:#8BC53F;flex:0 0 auto}
+  #vertus-consent .vc-cat strong{display:block;margin-bottom:2px}
+  #vertus-consent .vc-cat span{color:#b5b5b5}
+  #vertus-consent .vc-save{margin-top:12px}
+  @media(max-width:560px){#vertus-consent .vc-actions{flex:1 1 100%}
+    #vertus-consent .vc-actions button{flex:1}}
+</style>
+
+<div id="vertus-consent" role="dialog" aria-label="Cookie consent" aria-live="polite">
+  <div class="vc-inner">
+    <div class="vc-row">
+      <div class="vc-text">
+        We use cookies for analytics and advertising. We only set them with
+        your consent. You can accept all, reject all, or choose by category.
+        See our <a href="/privacy" target="_blank" rel="noopener">Privacy&nbsp;Policy</a>.
+      </div>
+      <div class="vc-actions">
+        <button type="button" class="vc-manage" id="vc-manage">Manage preferences</button>
+        <button type="button" class="vc-reject" id="vc-reject">Reject all</button>
+        <button type="button" class="vc-accept" id="vc-accept">Accept all</button>
+      </div>
+    </div>
+
+    <div class="vc-prefs">
+      <div class="vc-cat">
+        <input type="checkbox" checked disabled>
+        <label><strong>Strictly necessary</strong>
+          <span>Required for the site to function. Always on.</span></label>
+      </div>
+      <div class="vc-cat">
+        <input type="checkbox" id="vc-analytics">
+        <label for="vc-analytics"><strong>Analytics</strong>
+          <span>Helps us understand how the site is used (Google Analytics).</span></label>
+      </div>
+      <div class="vc-cat">
+        <input type="checkbox" id="vc-ads">
+        <label for="vc-ads"><strong>Advertising</strong>
+          <span>Used to measure and personalize marketing.</span></label>
+      </div>
+      <button type="button" class="vc-accept vc-save" id="vc-save">Save preferences</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEY = 'vertus_consent';
+  var banner  = document.getElementById('vertus-consent');
+  var elAnal  = document.getElementById('vc-analytics');
+  var elAds   = document.getElementById('vc-ads');
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+
+  // analytics/ad are 'granted' or 'denied'
+  function applyConsent(analytics, ads){
+    gtag('consent', 'update', {
+      'analytics_storage': analytics,
+      'ad_storage': ads,
+      'ad_user_data': ads,
+      'ad_personalization': ads
+    });
+    // Event GTM listens for. Tags gate on these values (see GTM setup).
+    dataLayer.push({
+      event: 'consent_update',
+      analytics_consent: analytics,
+      ad_consent: ads
+    });
+  }
+
+  function save(analytics, ads){
+    try{ localStorage.setItem(KEY, JSON.stringify(
+      {analytics:analytics, ads:ads, ts:Date.now()})); }catch(e){}
+  }
+  function read(){
+    try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; }
+  }
+
+  function close(){ banner.classList.remove('show','prefs-open'); }
+  function openBanner(showPrefs){
+    var prior = read();
+    // Reflect prior choice in toggles; default unchecked (no pre-ticked boxes)
+    elAnal.checked = !!(prior && prior.analytics === 'granted');
+    elAds.checked  = !!(prior && prior.ads === 'granted');
+    banner.classList.add('show');
+    if(showPrefs) banner.classList.add('prefs-open');
+  }
+
+  // On load: honor a prior choice silently, else show banner
+  var prior = read();
+  if(prior && prior.analytics && prior.ads){
+    applyConsent(prior.analytics, prior.ads);   // re-assert; fires gated tags
+  } else {
+    openBanner(false);
+  }
+
+  document.getElementById('vc-accept').addEventListener('click', function(){
+    applyConsent('granted','granted'); save('granted','granted'); close();
+  });
+  document.getElementById('vc-reject').addEventListener('click', function(){
+    applyConsent('denied','denied'); save('denied','denied'); close();
+  });
+  document.getElementById('vc-manage').addEventListener('click', function(){
+    banner.classList.toggle('prefs-open');
+  });
+  document.getElementById('vc-save').addEventListener('click', function(){
+    var a = elAnal.checked ? 'granted' : 'denied';
+    var d = elAds.checked  ? 'granted' : 'denied';
+    applyConsent(a,d); save(a,d); close();
+  });
+
+  // Withdrawal / change: add a footer link with id="cookie-settings"
+  var reopen = document.getElementById('cookie-settings');
+  if(reopen){ reopen.addEventListener('click', function(e){
+    e.preventDefault(); openBanner(true);
+  });}
+})();
+</script>

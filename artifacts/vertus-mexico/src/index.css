@@ -1,0 +1,225 @@
+@font-face {
+  font-family: "Prompt";
+  src: url("/fonts/Prompt-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Prompt";
+  src: url("/fonts/Prompt-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Prompt";
+  src: url("/fonts/Prompt-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/Newsreader-VF.ttf") format("truetype");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/Newsreader-Italic-VF.ttf") format("truetype");
+  font-weight: 200 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lato";
+  src: url("/fonts/Lato-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lato";
+  src: url("/fonts/Lato-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lato";
+  src: url("/fonts/Lato-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+::selection {
+  background: rgba(138, 170, 154, 0.32);
+}
+input::placeholder,
+textarea::placeholder {
+  color: #8a9a8a;
+}
+
+/* Skip link */
+.vx-skip:focus {
+  top: 16px !important;
+}
+
+/* Nav links */
+.vx-navlink:hover {
+  color: #e8e3d2 !important;
+}
+
+/* Cream CTA buttons */
+.vx-cta {
+  transition: opacity 0.2s;
+}
+.vx-cta:hover {
+  opacity: 0.85;
+}
+
+/* Team / secondary links */
+.vx-link:hover {
+  opacity: 0.7;
+}
+
+/* Resources CTA button */
+.vx-resource-cta {
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+.vx-resource-cta:hover {
+  color: #1a2e1a !important;
+  background: #a7d56f !important;
+  border-color: #a7d56f !important;
+}
+
+/* WhatsApp button */
+.vx-wa:hover {
+  opacity: 0.75;
+}
+
+/* FAQ toggle */
+.vx-faqbtn {
+  transition: color 0.2s;
+}
+.vx-faqbtn:hover {
+  color: var(--th-accent, #a7d56f) !important;
+}
+
+/* Inputs */
+.vx-input:focus {
+  border-color: #8bc53f !important;
+  box-shadow: 0 0 0 2px rgba(139, 197, 63, 0.3);
+}
+
+/* Approach square card focus */
+.vx-sqcard:focus-visible {
+  outline: 2px solid #8bc53f;
+  outline-offset: 2px;
+}
+
+/* Narrow phones: trim CTA horizontal padding so long Spanish labels
+   (e.g. "Inicia una conversación") don't overflow. Height/radius unchanged. */
+@media (max-width: 380px) {
+  .vx-cta {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  .vx-wa {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Slightly smaller button type (Design Round 2 follow-up).
+   Placed before the narrow-phone media query so the 344px rules still win. */
+.vx-cta,
+.vx-resource-cta,
+.vx-link {
+  font-size: 14px !important;
+}
+.vx-wa {
+  font-size: 13px !important;
+}
+
+/* Very narrow phones: uppercase labels are wider, so shrink type and
+   padding a bit more to keep buttons inside a 320px viewport. */
+@media (max-width: 344px) {
+  .vx-cta {
+    font-size: 12.5px !important;
+    letter-spacing: 0.02em !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  .vx-wa {
+    font-size: 12.5px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  .vx-resource-cta {
+    font-size: 12.5px !important;
+    letter-spacing: 0 !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  .vx-link {
+    font-size: 12.5px !important;
+    letter-spacing: 0 !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* All-caps button labels (Design Round 2) */
+.vx-cta,
+.vx-wa,
+.vx-resource-cta,
+.vx-link {
+  text-transform: uppercase;
+}
+
+/* Card hover lift (Design Round 2) — excludes quote cards and the map */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .vx-hovercard {
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  .vx-hovercard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(10, 20, 10, 0.22);
+  }
+}
+
+/* Approach section scroll hint */
+@keyframes vx-hint-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vx-sqhint svg {
+    animation: vx-hint-bob 1.8s ease-in-out infinite;
+  }
+}

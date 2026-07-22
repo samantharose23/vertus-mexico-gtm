@@ -1,0 +1,127 @@
+/*
+ * Cookie consent banner styles — standalone, no other stylesheet required.
+ *
+ * Re-theme per site by editing the CSS variables below. Everything else
+ * (layout, states: banner row, preferences panel, checkbox toggles,
+ * mobile stacking) works as-is.
+ */
+#cookie-consent-banner {
+    /* ---- theme (edit per site) ---- */
+    --cc-bg: #151515;          /* banner background */
+    --cc-fg: #f6f6f6;          /* banner text */
+    --cc-muted: #b5b5b5;       /* secondary text in preferences */
+    --cc-accent: #8bc53f;      /* links, checkboxes, Accept button */
+    --cc-accent-fg: #151515;   /* text on the Accept button */
+    --cc-border: #4a4a4a;      /* outlined button borders */
+    --cc-divider: #333;        /* preferences panel divider */
+    --cc-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2147483647;
+    display: none;
+    background: var(--cc-bg);
+    color: var(--cc-fg);
+    font-family: var(--cc-font);
+    box-shadow: 0 -2px 24px rgba(0, 0, 0, 0.35);
+}
+#cookie-consent-banner.show {
+    display: block;
+}
+#cookie-consent-banner .cc-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 24px;
+}
+#cookie-consent-banner .cc-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+}
+#cookie-consent-banner .cc-text {
+    flex: 1 1 320px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+#cookie-consent-banner .cc-text a {
+    color: var(--cc-accent);
+    text-decoration: underline;
+}
+#cookie-consent-banner .cc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    flex: 0 0 auto;
+}
+#cookie-consent-banner button {
+    cursor: pointer;
+    border: 0;
+    border-radius: 6px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: opacity 0.15s ease;
+}
+#cookie-consent-banner button:hover {
+    opacity: 0.88;
+}
+#cookie-consent-banner .cc-manage {
+    background: transparent;
+    color: var(--cc-fg);
+    border: 1px solid var(--cc-border);
+}
+#cookie-consent-banner .cc-reject {
+    background: transparent;
+    color: var(--cc-fg);
+    border: 1px solid var(--cc-border);
+}
+#cookie-consent-banner .cc-accept {
+    background: var(--cc-accent);
+    color: var(--cc-accent-fg);
+}
+#cookie-consent-banner .cc-prefs {
+    display: none;
+    margin-top: 18px;
+    border-top: 1px solid var(--cc-divider);
+    padding-top: 18px;
+}
+#cookie-consent-banner.prefs-open .cc-prefs {
+    display: block;
+}
+#cookie-consent-banner .cc-cat {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 14px;
+    line-height: 1.45;
+}
+#cookie-consent-banner .cc-cat input {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--cc-accent);
+    flex: 0 0 auto;
+}
+#cookie-consent-banner .cc-cat strong {
+    display: block;
+    margin-bottom: 2px;
+}
+#cookie-consent-banner .cc-cat span {
+    color: var(--cc-muted);
+}
+#cookie-consent-banner .cc-save {
+    margin-top: 12px;
+}
+@media (max-width: 560px) {
+    #cookie-consent-banner .cc-actions {
+        flex: 1 1 100%;
+    }
+    #cookie-consent-banner .cc-actions button {
+        flex: 1;
+    }
+}

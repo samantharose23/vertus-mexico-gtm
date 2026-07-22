@@ -1,0 +1,232 @@
+/**
+ * Cookie consent banner — GDPR-aligned, wired to Google Consent Mode v2.
+ *
+ * Pairs with:
+ *   - the Consent Mode defaults + guarded GTM loader in index.html <head>
+ *   - cookie-consent.css (banner styles)
+ *   - consent.config.ts (per-site storage key + privacy policy URL)
+ *
+ * How it works:
+ *   - First visit: shows the banner (defaults in the head snippet already denied everything).
+ *   - Accept / Reject / Save preferences: pushes a Consent Mode "update" plus a
+ *     {event:'consent_update'} dataLayer event, and persists the choice in localStorage.
+ *   - Returning visit: replays the stored choice silently (no banner).
+ *   - A window "open-cookie-settings" CustomEvent reopens the banner with the
+ *     preferences panel expanded (wired to the footer "Cookie Settings" link).
+ *
+ * Copy is bilingual: pass the active `Content` object so text follows the
+ * site's language toggle.
+ */
+import { useEffect, useState } from "react";
+import type { Content } from "../lib/content";
+import { CONSENT_STORAGE_KEY, PRIVACY_POLICY_URL } from "./consent.config";
+import "./cookie-consent.css";
+
+type ConsentValue = "granted" | "denied";
+
+interface StoredConsent {
+  analytics: ConsentValue;
+  ads: ConsentValue;
+  ts: number;
+}
+
+function gtag(...args: unknown[]) {
+  const w = window as unknown as { dataLayer?: unknown[] };
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push(args);
+}
+
+function pushConsentUpdate(analytics: ConsentValue, ads: ConsentValue) {
+  gtag("consent", "update", {
+    analytics_storage: analytics,
+    ad_storage: ads,
+    ad_user_data: ads,
+    ad_personalization: ads,
+  });
+  const w = window as unknown as { dataLayer?: unknown[] };
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push({
+    event: "consent_update",
+    analytics_consent: analytics,
+    ad_consent: ads,
+  });
+}
+
+function readConsent(): StoredConsent | null {
+  try {
+    const raw = localStorage.getItem(CONSENT_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as StoredConsent) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveConsent(analytics: ConsentValue, ads: ConsentValue) {
+  try {
+    localStorage.setItem(
+      CONSENT_STORAGE_KEY,
+      JSON.stringify({ analytics, ads, ts: Date.now() }),
+    );
+  } catch {
+    /* ignore storage errors */
+  }
+}
+
+export default function CookieConsent({ c }: { c: Content }) {
+  const [show, setShow] = useState(false);
+  const [prefsOpen, setPrefsOpen] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
+  const [ads, setAds] = useState(false);
+
+  const openBanner = (showPrefs: boolean) => {
+    const prior = readConsent();
+    setAnalytics(prior?.analytics === "granted");
+    setAds(prior?.ads === "granted");
+    setPrefsOpen(showPrefs);
+    setShow(true);
+  };
+
+  useEffect(() => {
+    const prior = readConsent();
+    if (prior && prior.analytics && prior.ads) {
+      pushConsentUpdate(prior.analytics, prior.ads);
+    } else {
+      openBanner(false);
+    }
+
+    const reopen = () => openBanner(true);
+    window.addEventListener("open-cookie-settings", reopen);
+    return () => window.removeEventListener("open-cookie-settings", reopen);
+  }, []);
+
+  const close = () => {
+    setShow(false);
+    setPrefsOpen(false);
+  };
+
+  const acceptAll = () => {
+    pushConsentUpdate("granted", "granted");
+    saveConsent("granted", "granted");
+    close();
+  };
+
+  const rejectAll = () => {
+    pushConsentUpdate("denied", "denied");
+    saveConsent("denied", "denied");
+    close();
+  };
+
+  const savePrefs = () => {
+    const a: ConsentValue = analytics ? "granted" : "denied";
+    const d: ConsentValue = ads ? "granted" : "denied";
+    pushConsentUpdate(a, d);
+    saveConsent(a, d);
+    close();
+  };
+
+  if (!show) return null;
+
+  return (
+    <div
+      id="cookie-consent-banner"
+      className={`show${prefsOpen ? " prefs-open" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={c.cookieAriaLabel}
+      aria-live="polite"
+      data-testid="banner-cookie-consent"
+    >
+      <div className="cc-inner">
+        <div className="cc-row">
+          <div className="cc-text">
+            {c.cookieText}
+            {PRIVACY_POLICY_URL ? (
+              <>
+                {" "}
+                <a
+                  href={PRIVACY_POLICY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="link-consent-privacy"
+                >
+                  {c.cookiePrivacyLabel}
+                </a>
+                .
+              </>
+            ) : null}
+          </div>
+          <div className="cc-actions">
+            <button
+              type="button"
+              className="cc-manage"
+              onClick={() => setPrefsOpen((v) => !v)}
+              data-testid="button-consent-manage"
+            >
+              {c.cookieManage}
+            </button>
+            <button
+              type="button"
+              className="cc-reject"
+              onClick={rejectAll}
+              data-testid="button-consent-reject"
+            >
+              {c.cookieReject}
+            </button>
+            <button
+              type="button"
+              className="cc-accept"
+              onClick={acceptAll}
+              data-testid="button-consent-accept"
+            >
+              {c.cookieAccept}
+            </button>
+          </div>
+        </div>
+
+        <div className="cc-prefs">
+          <div className="cc-cat">
+            <input type="checkbox" checked disabled readOnly />
+            <label>
+              <strong>{c.cookieNecessaryTitle}</strong>
+              <span>{c.cookieNecessaryDesc}</span>
+            </label>
+          </div>
+          <div className="cc-cat">
+            <input
+              type="checkbox"
+              id="cc-analytics"
+              checked={analytics}
+              onChange={(e) => setAnalytics(e.target.checked)}
+              data-testid="checkbox-consent-analytics"
+            />
+            <label htmlFor="cc-analytics">
+              <strong>{c.cookieAnalyticsTitle}</strong>
+              <span>{c.cookieAnalyticsDesc}</span>
+            </label>
+          </div>
+          <div className="cc-cat">
+            <input
+              type="checkbox"
+              id="cc-ads"
+              checked={ads}
+              onChange={(e) => setAds(e.target.checked)}
+              data-testid="checkbox-consent-ads"
+            />
+            <label htmlFor="cc-ads">
+              <strong>{c.cookieAdsTitle}</strong>
+              <span>{c.cookieAdsDesc}</span>
+            </label>
+          </div>
+          <button
+            type="button"
+            className="cc-accept cc-save"
+            onClick={savePrefs}
+            data-testid="button-consent-save"
+          >
+            {c.cookieSave}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

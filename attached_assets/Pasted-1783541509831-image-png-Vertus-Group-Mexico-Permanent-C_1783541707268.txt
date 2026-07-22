@@ -1,0 +1,66 @@
+1783541509831_image.png
+[Vertus Group Mexico — Permanent Capital in Mexico](https://thevertusgroupmexico.mx/) i want you to create a rpompt for replit that is a bio pice above the Thinking about the future of your company? section at the bottom that is a thing for maria that looks like this image but that matches the design and is on the paper white background. I will give the image but i want the prompt with the links it will be linking to and everything
+
+I'll create a Replit prompt for this Maria bio section. Let me check the site design first so the prompt matches.
+
+
+Fetched: Vertus Group Mexico — Capital permanente en México
+Fetched: Vertus Group Mexico — Capital permanente en México
+The page content is mostly JS-rendered, but I have enough from your image, memory of this project (bilingual ES/EN, brand green tokens, constellation motif), and the reference design to write a solid prompt. Here it is:
+
+Replit Prompt — Maria Demopoulos Bio Section (Vertus Group Mexico)
+
+Add a new bio section for Maria Demopoulos to the Vertus Group Mexico landing page. Place it directly above the "¿Pensando en el futuro de tu empresa?" / "Thinking about the future of your company?" CTA section at the bottom of the page.
+
+Reference: Match the layout of the attached image (photo card on the left with a bracket/corner accent, text block on the right with eyebrow label, two-line name, role subtitle, bio paragraph, and a button + LinkedIn icon). But invert the color scheme — this section sits on the paper-white background (not the dark green), so adapt accordingly.
+
+Layout
+
+Two-column, ~40/60 split. Photo left, text right. Stack vertically on mobile (photo on top).
+Left: Maria's portrait (black & white) in a rounded-corner card, with a thin lime-green bracket/corner accent framing the top-left and bottom-right — same as the image but drawn on the light background.
+Vertical padding generous (match spacing of adjacent sections).
+Colors (light-background adaptation, use existing brand tokens)
+
+Section background: paper white (existing --paper / off-white token).
+Eyebrow label ("TU CONTACTO EN MÉXICO"): lime green (--vertus-lime / brand accent green), uppercase, letter-spaced, small.
+Name "Maria": dark forest green (--vertus-green-dark), serif, bold, large.
+Name "Demopoulos": lime green, serif, bold, same size, on second line.
+Role subtitle ("LÍDER DE GRUPO · AMÉRICA LATINA"): muted grey-green, uppercase, letter-spaced.
+Bio paragraph: dark neutral/charcoal body text.
+Bracket accents on photo: lime green.
+Button: lime green fill, dark green text, pill/rounded. LinkedIn icon button: outlined square, dark green icon.
+Typography: Use the same serif for the name and the same sans-serif for labels/body already defined in the site's design tokens.
+
+Content (bilingual — wire into existing ES/EN toggle system)
+
+Spanish:
+
+Eyebrow: TU CONTACTO EN MÉXICO
+Name: Maria Demopoulos
+Role: LÍDER DE GRUPO · AMÉRICA LATINA
+Bio: Maria Demopoulos lidera la expansión de Vertus Group en América Latina. Expresidenta de una empresa de software adquirida por el grupo, aporta una disciplina centrada en el operador a uno de los ecosistemas de software más dinámicos del mundo. Si estás considerando el futuro de tu empresa, ella es tu punto de contacto directo —en tu mismo país y zona horaria.
+Button: ESCRÍBELE A MARIA
+English:
+
+Eyebrow: YOUR CONTACT IN MEXICO
+Name: Maria Demopoulos
+Role: GROUP LEADER · LATIN AMERICA
+Bio: Maria Demopoulos leads Vertus Group's expansion across Latin America. A former president of a software company acquired by the group, she brings operator-first discipline to one of the world's most dynamic software ecosystems. If you're thinking about the future of your company, she's your direct point of contact — in your own country and time zone.
+Button: WRITE TO MARIA
+Links
+
+"ESCRÍBELE A MARIA" / "WRITE TO MARIA" button → mailto: her email (replace with real address, e.g. mailto:maria.demopoulos@thevertusgroup.com).
+LinkedIn icon button → her LinkedIn profile URL (replace with real URL).
+Image: I'll provide Maria's photo file — use it as src in the photo card (apply grayscale filter if the source isn't already B&W).
+
+Responsive: On mobile, stack the photo above the text, center-align the button/LinkedIn row, keep the bracket accents scaled down.
+
+Two placeholders to fill before this goes live: Maria's email and her LinkedIn URL. Want me to plug those in if you have them?
+
+give me a short prompt that just says shortly what i want
+
+Add a Maria Demopoulos bio section directly above the "Thinking about the future of your company?" CTA at the bottom of the page. Match the layout of the attached image (B&W photo card on the left with lime-green corner-bracket accents, text block on the right: lime eyebrow "TU CONTACTO EN MÉXICO", two-line serif name with "Maria" in dark green and "Demopoulos" in lime, grey role subtitle, bio paragraph, then a lime pill button + LinkedIn icon). But put it on the paper-white background and adapt the colors to be legible on light. Use the existing brand tokens, fonts, and ES/EN toggle. Button links to her email (mailto:), LinkedIn icon links to her profile. I'll provide the photo, email, and LinkedIn URL.
+
+i want replit to match the design of the website i already have not the image i uploaded]
+
+Add a Maria Demopoulos bio section directly above the "Thinking about the future of your company?" CTA at the bottom of the page. Use the attached image only as a rough layout reference (B&W photo card on one side, text block on the other with an eyebrow label, two-line name, role subtitle, bio paragraph, button + LinkedIn icon). Everything else — colors, fonts, spacing, backgrounds, button styles, accents — should match the existing website's design system, not the image. Place it on the paper-white background using the site's own tokens and the existing ES/EN toggle. Button links to her email (mailto:), LinkedIn icon links to her profile. I'll provide the photo, email, and LinkedIn URL

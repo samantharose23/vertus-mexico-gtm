@@ -1,0 +1,48 @@
+Here's the full text:
+
+Vertus Group Mexico — Website Change Request (Design Round 2)
+Site: thevertusgroupmexico.mx
+Scope note: keep the existing design, layout, colors, and spacing rhythm intact. Only make the specific changes below. Show a preview/diff before committing each change.
+
+1. Enlarge the logo (top left)
+Current: The logo in the top-left of the header is small.
+Change to: Increase the logo size so it reads more prominently in the top-left. Keep it within the existing header height and alignment — scale it up without pushing the nav out of place or distorting aspect ratio.
+Done when: Logo is visibly larger and still aligned in the header; nav layout and header height are otherwise unchanged; the logo isn't stretched or pixelated.
+
+2. Button text to all caps
+Current: Button labels use sentence case, e.g. "Start a conversation →".
+Change to: Render the text inside ALL buttons in ALL CAPS. Keep each button's existing color, size, shape, padding, and icon unchanged — only the casing changes. Prefer CSS text-transform: uppercase over editing the text strings.
+Done when: All button labels display in caps sitewide; colors and dimensions identical to before; arrows/icons still render.
+
+3. Add hover animations to cards
+Current: Most cards are static on hover.
+Change to: Add a hover animation to all cards EXCEPT the quote cards and the map. A subtle, consistent effect (e.g., slight lift/shadow or scale) applied uniformly across the affected cards.
+Done when: All cards animate on hover except quote cards and the map, which stay static; the effect is consistent across cards and doesn't shift layout or cause flicker.
+Explicitly excluded from hover animation: quote cards and the map.
+
+4. Enlarge the "Business profile" and "Financial profile" titles
+These two sections list criteria under a title. Make the section titles bigger, and apply the same treatment to both so they match.
+Business profile — items under it: B2B software; SaaS or on-premise; Vertical-market focus; Mission-critical software; Proprietary solutions.
+Financial profile — same treatment as Business profile (title enlarged to match).
+Current: The "Business profile" and "Financial profile" titles are relatively small.
+Change to: Increase the font size of both titles so they read as clear section headers, and keep them identical in size/weight to each other.
+Done when: Both titles are larger and visually matched; the list items beneath them are unchanged; spacing doesn't break.
+
+5. Card hover animation on the profile cards
+Current: The Business profile and Financial profile cards should behave like the other cards.
+Change to: Apply the same hover animation from item 3 to the Business profile and Financial profile cards so they match the other animated cards (still excluding quote cards and the map).
+Done when: Business and Financial profile cards animate on hover consistently with the other cards.
+
+6. Remove the placeholder card beside "Message us on WhatsApp"
+Current: There is a placeholder card next to the "Message us on WhatsApp" card.
+Change to: Remove the placeholder card entirely. Reflow the remaining card(s) so the layout stays balanced and there's no empty gap where it was.
+Done when: The placeholder card is gone; the WhatsApp card and any remaining cards sit cleanly with no leftover gap or broken grid.
+
+Verification checklist
+
+Logo — larger in top-left, header/nav intact, not distorted.
+Buttons — all text in caps; colors and sizes unchanged.
+Card hover — all cards animate on hover except quote cards and the map.
+Titles — "Business profile" and "Financial profile" enlarged and matched.
+Profile cards — Business/Financial profile cards use the same hover animation.
+WhatsApp — placeholder card removed; layout reflows cleanly.

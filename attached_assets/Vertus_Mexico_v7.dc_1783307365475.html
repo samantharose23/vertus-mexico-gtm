@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:'Prompt';src:url('fonts/Prompt-Medium.ttf') format('truetype');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'Prompt';src:url('fonts/Prompt-SemiBold.ttf') format('truetype');font-weight:600;font-style:normal;font-display:swap;}
+@font-face{font-family:'Prompt';src:url('fonts/Prompt-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:'Newsreader';src:url('fonts/Newsreader-VF.ttf') format('truetype');font-weight:200 700;font-style:normal;font-display:swap;}
+@font-face{font-family:'Newsreader';src:url('fonts/Newsreader-Italic-VF.ttf') format('truetype');font-weight:200 700;font-style:italic;font-display:swap;}
+@font-face{font-family:'Lato';src:url('fonts/Lato-Light.ttf') format('truetype');font-weight:300;font-style:normal;font-display:swap;}
+@font-face{font-family:'Lato';src:url('fonts/Lato-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Lato';src:url('fonts/Lato-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap;}
+@media (prefers-reduced-motion: no-preference){html{scroll-behavior:smooth;}}
+body{margin:0;}
+*,*::before,*::after{box-sizing:border-box;}
+::selection{background:rgba(138,170,154,.32);}
+input::placeholder,textarea::placeholder{color:#8A9A8A;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="image-slot.js"></script>
+</helmet>
+
+<div data-screen-label="Vertus Mexico — Landing" lang="{{ lang }}" style="position:relative;min-height:100vh;background:#1A2E1A;color:#E8E3D2;font-family:'Lato',sans-serif;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;">
+
+  <a href="#main-content" style="position:absolute;left:16px;top:-60px;z-index:100;background:#8BC53F;color:#151515;padding:14px 22px;border-radius:8px;font-family:'Prompt',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;text-decoration:none;transition:top .2s ease-out;" style-focus="top:16px;">{{ t.skipLink }}</a>
+
+  <!-- Fibonacci-square field backdrop -->
+  <div id="vx-field-wrap" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;">
+    <div id="vx-field" style="position:absolute;inset:0;will-change:transform;">
+    <svg id="vx-fib-svg" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="-560 -560 1120 1120" style="position:absolute;inset:0;opacity:.45;transform:rotate(1.5deg);transform-origin:50% 50%;">
+      <!-- One golden-rectangle spiral of squares (each phi larger than the last),
+           built in JS and anchored at the spiral's accumulation point at (0,0).
+           Scroll scales this group about that point, so the field continuously
+           expands to the next-largest square. It is exactly self-similar every
+           4 squares, so the zoom loops seamlessly — the field reads as endless. -->
+      <rect x="-560" y="-560" width="1120" height="1120" fill="#16281A"></rect>
+      <g id="vx-grow"></g>
+    </svg>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header style="position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px clamp(18px,5vw,55px);background:rgba(21,38,21,.78);-webkit-backdrop-filter:saturate(150%) blur(11px);backdrop-filter:saturate(150%) blur(11px);border-bottom:1px solid #2A4A2A;">
+    <a href="#top" aria-label="Vertus Group Mexico" style="display:flex;align-items:center;text-decoration:none;flex:none;">
+      <img src="assets/vertus-logo.png" alt="Vertus Group Mexico" style="height:28px;width:auto;display:block;">
+    </a>
+    <nav aria-label="{{ t.navLabel }}" style="display:flex;align-items:center;gap:clamp(10px,1.8vw,24px);flex-wrap:wrap;justify-content:flex-end;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+        <a href="{{ n.href }}" style="{{ n.style }}" style-hover="color:#E8E3D2">{{ n.label }}</a>
+      </sc-for>
+      <span style="display:inline-flex;align-items:center;border:1px solid #2A4A2A;border-radius:999px;overflow:hidden;margin-left:4px;flex:none;">
+        <button type="button" onClick="{{ toES }}" aria-pressed="{{ esPressed }}" aria-label="Español" style="{{ esBtnStyle }}">{{ t.langES }}</button>
+        <button type="button" onClick="{{ toEN }}" aria-pressed="{{ enPressed }}" aria-label="English" style="{{ enBtnStyle }}">{{ t.langEN }}</button>
+      </span>
+    </nav>
+  </header>
+
+  <main id="main-content">
+  <!-- HERO -->
+  <section id="top" data-screen-label="01 Hero" style="position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:clamp(140px,18vh,180px) clamp(20px,7vw,110px) clamp(80px,10vh,110px);">
+
+    <!-- SPLIT variant -->
+    <sc-if value="{{ heroSplit }}" hint-placeholder-val="{{ true }}">
+      <div style="{{ heroGridStyle }}">
+        
+        
+      <div>
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:26px;">
+            
+            
+            
+            <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#8BC53F;margin-left:5px;">{{ t.heroEyebrow }}</span>
+          </div>
+          <h1 style="font-family:Georgia,'Newsreader',serif;font-weight:900;font-size:clamp(40px,6vw,92px);line-height:1.0;letter-spacing:-0.03em;color:#E8E3D2;margin:0;text-wrap:balance;max-width:14ch;">{{ t.heroTitle }}</h1>
+          <a href="#contacto" style="font-family:'Prompt',sans-serif;font-weight:600;font-size:15px;letter-spacing:.04em;color:#1A2E1A;background:#E8E3D2;border-radius:22px;padding:16px 32px;text-decoration:none;display:inline-block;margin-top:42px;transition:opacity .2s;" style-hover="opacity:.85">{{ t.ctaStart }}</a>
+        </div></div><p style="font-family:'Lato',sans-serif;font-size:19px;line-height:1.7;color:#E8E3D2;margin:0;max-width:36em;">{{ t.heroLead }}</p><div style="padding-bottom:8px;">
+          
+          <p style="font-family:'Lato',sans-serif;font-size:14.5px;line-height:1.6;color:#B7C4B7;margin:26px 0 0;padding-top:22px;border-top:1px solid #2A4A2A;">{{ t.heroParent }}</p>
+        </div>
+    </sc-if>
+
+    <!-- PANEL variant -->
+    <sc-if value="{{ heroPanel }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;z-index:2;max-width:940px;margin:0 auto;width:100%;">
+        <div style="position:relative;background:#163016;border:1px solid #2A4A2A;border-radius:16px;padding:clamp(34px,5vw,72px);">
+          <div style="position:absolute;inset:-13px;border:1px solid rgba(232,227,210,.16);border-radius:29px;pointer-events:none;"></div>
+          <div style="position:relative;">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:26px;">
+              <span style="width:5px;height:5px;border-radius:999px;background:#8BC53F;display:block;"></span>
+              <span style="width:7px;height:7px;border-radius:999px;background:#8BC53F;display:block;"></span>
+              <span style="width:9px;height:9px;border-radius:999px;background:#8BC53F;display:block;"></span>
+              <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#8BC53F;margin-left:5px;">{{ t.heroEyebrow }}</span>
+            </div>
+            <h1 style="font-family:Georgia,'Newsreader',serif;font-weight:900;font-size:clamp(38px,5.2vw,80px);line-height:1.02;letter-spacing:-0.03em;color:#E8E3D2;margin:0;text-wrap:balance;">{{ t.heroTitle }}</h1>
+            <p style="font-family:'Lato',sans-serif;font-size:19px;line-height:1.7;color:#E8E3D2;margin:36px 0 0;max-width:36em;">{{ t.heroLead }}</p>
+            <div style="display:flex;align-items:center;gap:18px;margin-top:38px;flex-wrap:wrap;">
+              <a href="#contacto" style="font-family:'Prompt',sans-serif;font-weight:600;font-size:15px;letter-spacing:.04em;color:#1A2E1A;background:#E8E3D2;border-radius:22px;padding:16px 32px;text-decoration:none;display:inline-block;transition:opacity .2s;" style-hover="opacity:.85">{{ t.ctaStart }}</a>
+            </div>
+            <p style="font-family:'Lato',sans-serif;font-size:14.5px;line-height:1.6;color:#B7C4B7;margin:34px 0 0;padding-top:24px;border-top:1px solid #2A4A2A;max-width:50em;">{{ t.heroParent }}</p>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- STATEMENT variant -->
+    <sc-if value="{{ heroStatement }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;z-index:2;max-width:1120px;margin:0 auto;width:100%;text-align:center;">
+        <div style="display:inline-flex;align-items:center;gap:9px;margin-bottom:30px;">
+          <span style="width:5px;height:5px;border-radius:999px;background:#8BC53F;display:block;"></span>
+          <span style="width:7px;height:7px;border-radius:999px;background:#8BC53F;display:block;"></span>
+          <span style="width:9px;height:9px;border-radius:999px;background:#8BC53F;display:block;"></span>
+          <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#8BC53F;margin-left:5px;">{{ t.heroEyebrow }}</span>
+        </div>
+        <h1 style="font-family:Georgia,'Newsreader',serif;font-weight:900;font-size:clamp(44px,7vw,104px);line-height:0.98;letter-spacing:-0.03em;color:#E8E3D2;margin:0 auto;text-wrap:balance;max-width:16ch;">{{ t.heroTitle }}</h1>
+        <p style="font-family:'Lato',sans-serif;font-size:20px;line-height:1.7;color:#E8E3D2;margin:36px auto 0;max-width:34em;">{{ t.heroLead }}</p>
+        <div style="margin-top:40px;"><a href="#contacto" style="font-family:'Prompt',sans-serif;font-weight:600;font-size:15px;letter-spacing:.04em;color:#1A2E1A;background:#E8E3D2;border-radius:22px;padding:16px 34px;text-decoration:none;display:inline-block;transition:opacity .2s;" style-hover="opacity:.85">{{ t.ctaStart }}</a></div>
+        <p style="font-family:'Lato',sans-serif;font-size:14.5px;line-height:1.6;color:#B7C4B7;margin:46px auto 0;max-width:46em;">{{ t.heroParent }}</p>
+      </div>
+    </sc-if>
+  </section>
+
+  <!-- STAYS THE SAME -->
+  <div style="{{ vellumTheme }}">
+  <section id="permanece" data-screen-label="02 What stays the same" style="position:relative;z-index:2;padding:clamp(80px,11vw,140px) clamp(20px,7vw,110px);scroll-margin-top:80px;border-top:1px solid var(--th-line,#2A4A2A);background:var(--th-bg,rgba(21,38,21,.55));">
+    <div style="max-width:1240px;margin:0 auto;">
+      <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--th-eyebrow,#8BC53F);margin-bottom:18px;">{{ t.stayEyebrow }}</div>
+      <h2 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(32px,4.6vw,62px);line-height:1.08;letter-spacing:-0.01em;color:var(--th-head,#E8E3D2);margin:0;text-wrap:balance;max-width:18ch;">{{ t.stayTitle }}</h2>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:24px;"><span style="height:1px;width:55px;background:var(--th-accent,#8BC53F);display:block;"></span><span style="width:7px;height:7px;border-radius:999px;background:var(--th-accent,#8BC53F);display:block;"></span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:18px;margin-top:48px;">
+        <sc-for list="{{ t.stayCards }}" as="c" hint-placeholder-count="4">
+          <article style="border:1px solid var(--th-card-border,#2A4A2A);border-radius:13px;padding:clamp(26px,2.2vw,34px);background:var(--th-card-bg,#163016);display:flex;flex-direction:column;min-height:240px;">
+            <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--th-muted,#AFBEAF);">{{ c.tag }}</div>
+            <h3 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:25px;letter-spacing:-0.01em;color:var(--th-text,#E8E3D2);margin:14px 0 14px;">{{ c.title }}</h3>
+            <p style="font-family:'Lato',sans-serif;font-size:15.5px;line-height:1.65;color:var(--th-muted,#AFBEAF);margin:0;">{{ c.body }}</p>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- THE DIFFERENCE -->
+  <div style="{{ greenTheme }}">
+  <section id="capital" data-screen-label="03 Why permanent capital" style="position:relative;z-index:2;padding:clamp(80px,11vw,140px) clamp(20px,7vw,110px);scroll-margin-top:80px;background:var(--th-bg,#E8E3D2);border-top:1px solid var(--th-line,#2A4A2A);">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div style="font-family:'Prompt',sans-serif;font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--th-eyebrow,#2A4A2A);margin-bottom:18px;">{{ t.diffEyebrow }}</div>
+      <h2 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(32px,4.8vw,64px);line-height:1.07;letter-spacing:-0.01em;color:var(--th-head,#1A2E1A);margin:0;text-wrap:balance;max-width:16ch;">{{ t.diffTitle }}</h2>
+      <p style="font-family:'Lato',sans-serif;font-weight:400;font-size:clamp(17px,1.5vw,20px);line-height:1.7;color:var(--th-body,#33402F);margin:34px 0 0;max-width:60ch;">{{ t.diffBody }}</p>
+      <div style="{{ diffCardsStyle }}">
+        <div style="border:1px solid var(--th-card-border,rgba(26,46,26,.22));border-radius:13px;padding:clamp(26px,2.4vw,38px);background:var(--th-card-bg,rgba(255,255,255,.4));">
+          <div style="font-family:'Prompt',sans-serif;font-weight:600;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--th-muted,#4A5642);margin-bottom:16px;">{{ t.diffThemLabel }}</div>
+          <div style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:24px;color:var(--th-text,#2A3A26);margin-bottom:10px;letter-spacing:-0.01em;">{{ t.diffThemHead }}</div>
+          <p style="font-family:'Lato',sans-serif;font-size:15px;line-height:1.6;color:var(--th-muted,#4A5642);margin:0;">{{ t.diffThemBody }}</p>
+        </div>
+        <div style="border:1px solid var(--th-us-border,#2A4A2A);border-radius:13px;padding:clamp(26px,2.4vw,38px);background:var(--th-us-bg,#1A2E1A);position:relative;">
+          <div style="font-family:'Prompt',sans-serif;font-weight:600;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--th-us-label,#8BC53F);margin-bottom:16px;">{{ t.diffUsLabel }}</div>
+          <div style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:24px;color:var(--th-us-head,#E8E3D2);margin-bottom:10px;letter-spacing:-0.01em;">{{ t.diffUsHead }}</div>
+          <p style="font-family:'Lato',sans-serif;font-size:15px;line-height:1.6;color:var(--th-us-body,#C9D2C9);margin:0;">{{ t.diffUsBody }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- ESTABLISHED IN MEXICO -->
+  <div style="{{ vellumTheme }}">
+  <section id="mexico" data-screen-label="04 Established in Mexico" style="position:relative;z-index:2;padding:clamp(80px,11vw,140px) clamp(20px,7vw,110px);scroll-margin-top:80px;border-top:1px solid var(--th-line,#2A4A2A);background:var(--th-bg,transparent);overflow:hidden;">
+    
+    <div style="max-width:1240px;margin:0 auto;position:relative;">
+      <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--th-eyebrow,#8BC53F);margin-bottom:18px;">{{ t.mxEyebrow }}</div>
+      <h2 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(32px,4.8vw,64px);line-height:1.07;letter-spacing:-0.01em;color:var(--th-head,#E8E3D2);margin:0;text-wrap:balance;">{{ t.mxTitle }}</h2>
+      <p style="font-family:'Lato',sans-serif;font-size:18px;line-height:1.7;color:var(--th-body,#AFBEAF);margin:28px 0 0;max-width:62ch;">{{ t.mxBody }}</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:50px;">
+        <sc-for list="{{ t.testimonials }}" as="q" hint-placeholder-count="3">
+          <figure style="border:1px solid var(--th-card-border,#2A4A2A);border-radius:13px;padding:clamp(26px,2.2vw,34px);background:var(--th-card-bg,#163016);margin:0;display:flex;flex-direction:column;">
+            <span style="align-self:flex-start;font-family:'Prompt',sans-serif;font-weight:500;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#1A2E1A;background:#8BC53F;border-radius:999px;padding:4px 10px;margin-bottom:20px;opacity:.9;">{{ t.placeholderTag }}</span>
+            <blockquote style="font-family:'Newsreader',Georgia,serif;font-style:italic;font-weight:500;font-size:20px;line-height:1.45;color:var(--th-quote,#D9E0D9);margin:0 0 24px;">{{ q.quote }}</blockquote>
+            <figcaption style="display:flex;align-items:center;gap:14px;margin-top:auto;">
+              <image-slot id="{{ q.slotId }}" shape="circle" placeholder="{{ q.slotHint }}" style="width:54px;height:54px;flex:none;border:1px solid var(--th-card-border,#2A4A2A);border-radius:999px;"></image-slot>
+              <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:12.5px;letter-spacing:.04em;color:var(--th-muted,#AFBEAF);line-height:1.4;">{{ q.name }}</span>
+            </figcaption>
+          </figure>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- THE TEAM -->
+  <section id="equipo" data-screen-label="05 Team" style="position: relative; z-index: 2; padding: clamp(80px,11vw,140px) clamp(20px,7vw,110px); scroll-margin-top: 80px; background: rgba(21,38,21,.6); border-top: 1px solid #2A4A2A; padding-bottom: clamp(20px,11vw,0px)">
+    <div style="{{ teamGridStyle }}">
+      <div>
+        <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#8BC53F;margin-bottom:18px;">{{ t.teamEyebrow }}</div>
+        <h2 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(30px,4vw,54px);line-height:1.08;letter-spacing:-0.01em;color:#E8E3D2;margin:0;text-wrap:balance;">{{ t.teamTitle }}</h2>
+        <p style="font-family:'Lato',sans-serif;font-size:18px;line-height:1.7;color:#AFBEAF;margin:28px 0 0;max-width:60ch;">{{ t.teamBody }}</p>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:34px;">
+          <sc-for list="{{ t.teamLinks }}" as="l" hint-placeholder-count="2">
+            <a href="{{ l.href }}" target="_blank" rel="noopener" style="font-family:'Prompt',sans-serif;font-weight:600;font-size:15px;letter-spacing:.02em;color:#A7D56F;text-decoration:none;transition:opacity .2s;" style-hover="opacity:.7">{{ l.label }}</a>
+          </sc-for>
+        </div>
+      </div>
+      <div style="{{ statsGridStyle }}">
+        <sc-for list="{{ t.stats }}" as="s" hint-placeholder-count="4">
+          <div style="padding:26px 22px;">
+            <div style="font-family:Georgia,serif;font-weight:900;font-size:clamp(38px,4vw,56px);line-height:0.9;letter-spacing:-0.03em;color:{{ s.color }};">{{ s.value }}</div>
+            <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#2A4A2A;margin-top:14px;line-height:1.4;">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR FOUNDERS -->
+  <section id="fundadores" data-screen-label="06 For founders" style="position: relative; z-index: 2; padding: clamp(24px,4vw,48px) clamp(20px,7vw,110px) clamp(80px,11vw,140px); scroll-margin-top: 80px; background: rgba(21,38,21,.6); padding-top: clamp(24px,4vw,0px)">
+    <div style="max-width:1240px;margin:0 auto;">
+      <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#8BC53F;margin-bottom:18px;">{{ t.foundEyebrow }}</div>
+      <h2 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(32px,4.8vw,64px);line-height:1.07;letter-spacing:-0.01em;color:#E8E3D2;margin:0;">{{ t.foundTitle }}</h2>
+      <p style="font-family:'Lato',sans-serif;font-size:18px;line-height:1.7;color:#AFBEAF;margin:24px 0 0;max-width:60ch;">{{ t.foundBody }}</p>
+      <div style="{{ foundCardsStyle }}">
+        <div style="border:1px solid #2A4A2A;border-radius:13px;padding:clamp(26px,2.4vw,40px);background:#163016;">
+          <div style="font-family:'Prompt',sans-serif;font-weight:600;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:#8BC53F;margin-bottom:22px;">{{ t.bizHead }}</div>
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:15px;">
+            <sc-for list="{{ t.bizItems }}" as="b" hint-placeholder-count="5">
+              <li style="display:flex;align-items:center;gap:13px;font-family:'Lato',sans-serif;font-size:16px;color:#E8E3D2;"><span style="width:7px;height:7px;border-radius:999px;background:#8BC53F;flex:none;display:block;"></span>{{ b }}</li>
+            </sc-for>
+          </ul>
+        </div>
+        <div style="border:1px solid #2A4A2A;border-radius:13px;padding:clamp(26px,2.4vw,40px);background:#163016;">
+          <div style="font-family:'Prompt',sans-serif;font-weight:600;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:#8BC53F;margin-bottom:22px;">{{ t.finHead }}</div>
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:15px;">
+            <sc-for list="{{ t.finItems }}" as="f" hint-placeholder-count="3">
+              <li style="display:flex;align-items:center;gap:13px;font-family:'Lato',sans-serif;font-size:16px;color:#E8E3D2;"><span style="width:7px;height:7px;border-radius:999px;background:#8BC53F;flex:none;display:block;"></span>{{ f }}</li>
+            </sc-for>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:18px;border:1px solid #2A4A2A;border-radius:13px;padding:clamp(30px,4vw,56px);background:#152615;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:28px;">
+        <div style="max-width:46ch;">
+          <div style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(22px,2.4vw,30px);line-height:1.25;letter-spacing:-0.01em;color:#E8E3D2;">{{ t.foundCtaQ }}</div>
+          <p style="font-family:'Lato',sans-serif;font-size:15px;line-height:1.6;color:#AFBEAF;margin:14px 0 0;">{{ t.foundCtaNote }}</p>
+        </div>
+        <a href="#contacto" style="font-family:'Prompt',sans-serif;font-weight:600;font-size:15px;letter-spacing:.04em;color:#1A2E1A;background:#E8E3D2;border-radius:22px;padding:16px 32px;text-decoration:none;display:inline-block;flex:none;transition:opacity .2s;" style-hover="opacity:.85">{{ t.ctaStart }}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <div style="{{ vellumTheme }}">
+  <section data-screen-label="07 FAQ" style="position:relative;z-index:2;padding:clamp(80px,11vw,140px) clamp(20px,7vw,110px);background:var(--th-bg,#152615);border-top:1px solid var(--th-line,#2A4A2A);">
+    <div style="max-width:900px;margin:0 auto;">
+      <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--th-eyebrow,#8BC53F);margin-bottom:18px;">{{ t.faqEyebrow }}</div>
+      <h2 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(30px,4vw,56px);line-height:1.08;letter-spacing:-0.01em;color:var(--th-head,#E8E3D2);margin:0 0 44px;text-wrap:balance;max-width:18ch;">{{ t.faqTitle }}</h2>
+      <div style="border-top:1px solid var(--th-card-border,#2A4A2A);">
+        <sc-for list="{{ t.faq }}" as="f" hint-placeholder-count="5">
+          <div style="border-bottom:1px solid var(--th-card-border,#2A4A2A);">
+            <button type="button" onClick="{{ f.onToggle }}" aria-expanded="{{ f.ariaExpanded }}" aria-controls="{{ f.panelId }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;text-align:left;background:transparent;border:none;cursor:pointer;padding:24px 0;font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(18px,2vw,23px);letter-spacing:-0.005em;color:var(--th-head,#E8E3D2);transition:color .2s;" style-hover="color:var(--th-accent,#A7D56F)">
+              <span>{{ f.q }}</span>
+              <span aria-hidden="true" style="flex:none;width:26px;height:26px;border-radius:999px;border:1px solid var(--th-card-border,#2A4A2A);display:flex;align-items:center;justify-content:center;font-family:'Prompt',sans-serif;font-weight:500;font-size:18px;color:var(--th-accent,#8BC53F);line-height:1;">{{ f.icon }}</span>
+            </button>
+            <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+              <p id="{{ f.panelId }}" style="font-family:'Lato',sans-serif;font-size:16.5px;line-height:1.7;color:var(--th-muted,#AFBEAF);margin:0;padding:0 0 28px;max-width:64ch;">{{ f.a }}</p>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- OUR APPROACH -->
+  <section id="enfoque" data-screen-label="08 Our approach" style="position:relative;z-index:2;border-top:1px solid #2A4A2A;background:rgba(21,38,21,.6);">
+    <div style="max-width:1240px;margin:0 auto;padding:clamp(80px,11vw,140px) clamp(20px,7vw,110px) clamp(24px,4vw,48px);">
+      <div style="font-family:'Prompt',sans-serif;font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#8BC53F;margin-bottom:18px;">{{ t.appEyebrow }}</div>
+      <h2 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(30px,4.4vw,60px);line-height:1.07;letter-spacing:-0.01em;color:#E8E3D2;margin:0;text-wrap:balance;max-width:20ch;">{{ t.appTitle }}</h2>
+      <p style="font-family:'Lato',sans-serif;font-size:18px;line-height:1.7;color:#AFBEAF;margin:26px 0 0;max-width:64ch;">{{ t.appBody }}</p>
+    </div>
+
+    <sc-if value="{{ approachFan }}" hint-placeholder-val="{{ false }}">
+      <div ref="{{ approachStageRef }}" style="height:100vh;display:flex;align-items:center;justify-content:center;padding:0 clamp(20px,7vw,110px);overflow:hidden;">
+        <div ref="{{ approachFanRef }}" style="position:relative;width:min(92vw,860px);height:min(66vh,460px);">
+          <sc-for list="{{ deckSteps }}" as="s" hint-placeholder-count="8">
+            <div data-deck-card="true" data-index="{{ s.idx }}" role="button" tabindex="0" aria-label="{{ s.ariaLabel }}" onClick="{{ s.onJump }}" onKeyDown="{{ s.onKey }}" style="position:absolute;left:50%;top:50%;width:min(88vw,540px);opacity:0;transform:translate(-50%,-50%);border:1px solid #2A4A2A;border-radius:16px;background:#163016;padding:clamp(30px,4vw,48px);cursor:pointer;box-sizing:border-box;" style-focus="outline:2px solid #8BC53F;outline-offset:3px">
+              <span style="font-family:Georgia,serif;font-weight:900;font-size:clamp(44px,5vw,66px);letter-spacing:-0.03em;color:#8BC53F;line-height:1;display:block;">{{ s.n }}</span>
+              <h3 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(24px,2.6vw,34px);letter-spacing:-0.01em;color:#E8E3D2;margin:18px 0 0;">{{ s.title }}</h3>
+              <p style="font-family:'Lato',sans-serif;font-size:clamp(15px,1.5vw,17px);line-height:1.7;color:#AFBEAF;margin:14px 0 0;">{{ s.body }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ approachSquares }}" hint-placeholder-val="{{ false }}">
+      <div ref="{{ squaresStageRef }}" style="height:100vh;display:flex;align-items:center;justify-content:center;padding:0 clamp(20px,7vw,110px);overflow:hidden;">
+        <div ref="{{ squaresFieldRef }}" style="position:relative;width:min(92vw,900px);height:min(76vh,700px);">
+          <sc-for list="{{ deckSteps }}" as="s" hint-placeholder-count="8">
+            <div data-sq-card="true" data-index="{{ s.idx }}" role="button" tabindex="0" aria-label="{{ s.ariaLabel }}" onClick="{{ s.onJump }}" onKeyDown="{{ s.onKey }}" style="position:absolute;left:0;top:0;width:120px;height:120px;border:1px solid #2A4A2A;border-radius:0;background:#163016;box-sizing:border-box;overflow:hidden;cursor:pointer;opacity:0;transform:translate(-9999px,-9999px);will-change:transform,width,height,opacity;" style-focus="outline:2px solid #8BC53F;outline-offset:2px">
+              <div style="position:absolute;inset:0;padding:clamp(20px,2.4vw,34px);display:flex;flex-direction:column;box-sizing:border-box;">
+                <span data-sq-num="true" style="font-family:Georgia,serif;font-weight:900;font-size:clamp(30px,3.4vw,48px);letter-spacing:-0.03em;color:#8BC53F;line-height:1;display:block;transition:opacity .25s cubic-bezier(0.22,0.61,0.36,1);">{{ s.n }}</span>
+                <h3 data-sq-title="true" style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(20px,2.2vw,30px);letter-spacing:-0.01em;color:#E8E3D2;margin:14px 0 0;transition:opacity .25s cubic-bezier(0.22,0.61,0.36,1);">{{ s.title }}</h3>
+                <p data-sq-body="true" style="font-family:'Lato',sans-serif;font-size:clamp(14px,1.4vw,16.5px);line-height:1.6;color:#AFBEAF;margin:13px 0 0;transition:opacity .25s cubic-bezier(0.22,0.61,0.36,1);">{{ s.body }}</p>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ approachRail }}" hint-placeholder-val="{{ true }}">
+      <div ref="{{ approachRailRef }}" style="max-width:1240px;margin:0 auto;padding:clamp(20px,3vw,40px) clamp(20px,7vw,110px) clamp(60px,8vw,110px);display:grid;grid-template-columns:56px 1fr;gap:clamp(16px,3.2vw,42px);">
+        <div style="position:relative;">
+          <div ref="{{ railColRef }}" style="position:absolute;top:0;left:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:16px;will-change:transform;">
+            <div ref="{{ railNumRef }}" style="font-family:Georgia,serif;font-weight:900;font-size:clamp(40px,4.4vw,60px);color:#8BC53F;line-height:1;min-width:1.2ch;text-align:center;"></div>
+            <div style="position:relative;width:2px;height:150px;background:#2A4A2A;border-radius:2px;overflow:hidden;">
+              <div ref="{{ railFillRef }}" style="position:absolute;left:0;top:0;width:100%;background:#8BC53F;height:0%;"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;">
+          <sc-for list="{{ deckSteps }}" as="s" hint-placeholder-count="8">
+            <div data-rail-step="true" data-n="{{ s.n }}" style="{{ railStepStyle }}">
+              <h3 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:clamp(24px,2.8vw,38px);letter-spacing:-0.01em;color:#E8E3D2;margin:0;max-width:22ch;">{{ s.title }}</h3>
+              <p style="font-family:'Lato',sans-serif;font-size:clamp(15px,1.5vw,18px);line-height:1.7;color:#AFBEAF;margin:10px 0 0;max-width:54ch;">{{ s.body }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ approachGrid }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,7vw,110px) clamp(80px,11vw,140px);">
+        <div style="border-radius:13px;overflow:hidden;background:#163016;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));border-top:1px solid #2A4A2A;border-left:1px solid #2A4A2A;">
+            <sc-for list="{{ t.steps }}" as="s" hint-placeholder-count="8">
+              <div style="border-right:1px solid #2A4A2A;border-bottom:1px solid #2A4A2A;padding:clamp(26px,2.2vw,36px);background:#163016;">
+                <div style="display:flex;align-items:baseline;gap:14px;">
+                  <span style="font-family:Georgia,serif;font-weight:900;font-size:34px;letter-spacing:-0.03em;color:#8BC53F;line-height:1;">{{ s.n }}</span>
+                  <h3 style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:21px;letter-spacing:-0.005em;color:#E8E3D2;margin:0;">{{ s.title }}</h3>
+                </div>
+                <p style="font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#AFBEAF;margin:16px 0 0;">{{ s.body }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+
+  <!-- FINAL CTA + CONTACT -->
+  <div style="{{ vellumTheme }}">
+  <section id="contacto" data-screen-label="09 Get in touch" style="position:relative;z-index:2;padding:clamp(80px,11vw,140px) clamp(20px,7vw,110px);scroll-margin-top:70px;background:var(--th-bg,#152615);border-top:1px solid var(--th-line,#2A4A2A);overflow:hidden;">
+    
+    <div style="{{ contactGridStyle }}">
+      <div>
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:24px;">
+          <span style="width:5px;height:5px;border-radius:999px;background:#8BC53F;display:block;"></span>
+          <span style="width:7px;height:7px;border-radius:999px;background:#8BC53F;display:block;"></span>
+          <span style="width:9px;height:9px;border-radius:999px;background:#8BC53F;display:block;"></span>
+        </div>
+        <h2 style="font-family:Georgia,'Newsreader',serif;font-weight:900;font-size:clamp(34px,4.6vw,68px);line-height:1.02;letter-spacing:-0.03em;color:var(--th-head,#E8E3D2);margin:0;text-wrap:balance;">{{ t.finalTitle }}</h2>
+        <p style="font-family:'Lato',sans-serif;font-size:18px;line-height:1.7;color:var(--th-body,#AFBEAF);margin:28px 0 0;max-width:48ch;">{{ t.finalBody }}</p>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:34px;flex-wrap:wrap;">
+          <a href="https://wa.me/52XXXXXXXXXX" target="_blank" rel="noopener" style="font-family:'Prompt',sans-serif;font-weight:600;font-size:14px;letter-spacing:.03em;color:var(--th-head,#E8E3D2);text-decoration:none;border:1px solid var(--th-line,#2A4A2A);border-radius:22px;padding:13px 24px;display:inline-flex;align-items:center;gap:10px;transition:opacity .2s;" style-hover="opacity:.75"><span style="width:8px;height:8px;border-radius:999px;background:#8BC53F;display:block;"></span>{{ t.whatsappLabel }}</a>
+          <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#1A2E1A;background:#8BC53F;border-radius:999px;padding:4px 10px;opacity:.9;">{{ t.placeholderTag }}</span>
+        </div>
+      </div>
+
+      <form onSubmit="{{ onSubmit }}" novalidate="true" style="border:1px solid #2A4A2A;border-radius:16px;padding:clamp(26px,2.6vw,40px);background:#163016;">
+        <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true"><label>Don't fill this out<input type="text" tabindex="-1" autocomplete="off" ref="{{ hpRef }}"></label></div>
+        <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="display:flex;flex-direction:column;align-items:flex-start;gap:16px;padding:30px 4px;">
+            <span style="width:38px;height:38px;border-radius:999px;background:#8BC53F;color:#151515;display:flex;align-items:center;justify-content:center;font-family:'Prompt',sans-serif;font-weight:700;font-size:20px;">✓</span>
+            <p style="font-family:'Newsreader',Georgia,serif;font-weight:600;font-size:22px;color:#E8E3D2;margin:0;">{{ t.formSuccess }}</p>
+          </div>
+        </sc-if>
+        <sc-if value="{{ formVisible }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:18px;">
+            <p style="font-family:'Lato',sans-serif;font-size:12.5px;line-height:1.5;color:#AFBEAF;margin:0;">{{ t.requiredNote }}</p>
+            <label style="display:flex;flex-direction:column;gap:7px;">
+              <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#AFBEAF;">{{ t.formName }}<span aria-hidden="true" style="color:#8BC53F;margin-left:3px;">*</span></span>
+              <input type="text" ref="{{ nameRef }}" name="name" required="true" aria-required="true" aria-invalid="{{ ariaName }}" aria-describedby="{{ ariaDescribedbyName }}" style="font-family:'Lato',sans-serif;font-size:15px;color:#E8E3D2;background:#152615;border:1px solid #5F7A5F;border-radius:4px;padding:12px 14px;width:100%;outline:none;" style-focus="border-color:#8BC53F;box-shadow:0 0 0 2px rgba(139,197,63,.3)">
+              <sc-if value="{{ errName }}" hint-placeholder-val="{{ false }}"><span id="vx-err-name" role="alert" style="font-family:'Lato',sans-serif;font-size:14px;color:#E2B48F;">{{ t.errName }}</span></sc-if>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:7px;">
+              <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#AFBEAF;">{{ t.formCompany }}</span>
+              <input type="text" ref="{{ companyRef }}" style="font-family:'Lato',sans-serif;font-size:15px;color:#E8E3D2;background:#152615;border:1px solid #5F7A5F;border-radius:4px;padding:12px 14px;width:100%;outline:none;" style-focus="border-color:#8BC53F;box-shadow:0 0 0 2px rgba(139,197,63,.3)">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:7px;">
+              <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#AFBEAF;">{{ t.formEmail }}<span aria-hidden="true" style="color:#8BC53F;margin-left:3px;">*</span></span>
+              <input type="email" ref="{{ emailRef }}" name="email" required="true" aria-required="true" aria-invalid="{{ ariaEmail }}" aria-describedby="{{ ariaDescribedbyEmail }}" style="font-family:'Lato',sans-serif;font-size:15px;color:#E8E3D2;background:#152615;border:1px solid #5F7A5F;border-radius:4px;padding:12px 14px;width:100%;outline:none;" style-focus="border-color:#8BC53F;box-shadow:0 0 0 2px rgba(139,197,63,.3)">
+              <sc-if value="{{ errEmail }}" hint-placeholder-val="{{ false }}"><span id="vx-err-email" role="alert" style="font-family:'Lato',sans-serif;font-size:14px;color:#E2B48F;">{{ t.errEmail }}</span></sc-if>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:7px;">
+              <span style="font-family:'Prompt',sans-serif;font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#AFBEAF;">{{ t.formMessage }}<span aria-hidden="true" style="color:#8BC53F;margin-left:3px;">*</span></span>
+              <textarea rows="4" ref="{{ messageRef }}" name="message" required="true" aria-required="true" aria-invalid="{{ ariaMsg }}" aria-describedby="{{ ariaDescribedbyMsg }}" style="font-family:'Lato',sans-serif;font-size:15px;color:#E8E3D2;background:#152615;border:1px solid #5F7A5F;border-radius:4px;padding:12px 14px;width:100%;outline:none;resize:vertical;min-height:104px;" style-focus="border-color:#8BC53F;box-shadow:0 0 0 2px rgba(139,197,63,.3)"></textarea>
+              <sc-if value="{{ errMsg }}" hint-placeholder-val="{{ false }}"><span id="vx-err-message" role="alert" style="font-family:'Lato',sans-serif;font-size:14px;color:#E2B48F;">{{ t.errMessage }}</span></sc-if>
+            </label>
+            <button type="submit" style="font-family:'Prompt',sans-serif;font-weight:600;font-size:15px;letter-spacing:.04em;color:#1A2E1A;background:#E8E3D2;border:none;border-radius:22px;padding:15px 30px;cursor:pointer;align-self:flex-start;transition:opacity .2s;" style-hover="opacity:.85">{{ t.formSend }}</button>
+            <p style="font-family:'Lato',sans-serif;font-size:13px;line-height:1.5;color:#AFBEAF;margin:2px 0 0;">{{ t.formNote }}</p>
+          </div>
+        </sc-if>
+      </form>
+    </div>
+  </section>
+  </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer style="position:relative;z-index:2;padding:clamp(48px,6vw,72px) clamp(20px,7vw,110px);border-top:1px solid #2A4A2A;background:#0F1E0F;">
+    <div style="max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:30px;">
+      <div style="max-width:54ch;">
+        <img src="assets/vertus-logo.png" alt="Vertus Group Mexico" style="height:26px;width:auto;display:block;margin-bottom:22px;">
+        <p style="font-family:'Lato',sans-serif;font-size:14.5px;line-height:1.6;color:#B7C4B7;margin:0;">{{ t.heroParent }}</p>
+      </div>
+      <a href="https://wa.me/52XXXXXXXXXX" target="_blank" rel="noopener" style="font-family:'Prompt',sans-serif;font-weight:500;font-size:13px;letter-spacing:.03em;color:#A7D56F;text-decoration:none;transition:opacity .2s;" style-hover="opacity:.7">{{ t.whatsappLabel }} →</a>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<template id="__bundler_thumbnail" data-bg-color="#1A2E1A">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#1A2E1A"/>
+    <g fill="none" stroke="#2A4A2A" stroke-width="3">
+      <rect x="470" y="250" width="170" height="170"/>
+      <rect x="640" y="315" width="105" height="105"/>
+      <rect x="640" y="250" width="65" height="65"/>
+    </g>
+    <g fill="#8BC53F">
+      <circle cx="486" cy="520" r="9"/>
+      <circle cx="520" cy="520" r="13"/>
+      <circle cx="566" cy="520" r="17"/>
+    </g>
+    <text x="600" y="640" text-anchor="middle" fill="#E8E3D2" font-family="Georgia, serif" font-weight="900" font-size="64" letter-spacing="-2">Vertus</text>
+    <text x="600" y="690" text-anchor="middle" fill="#8BC53F" font-family="Georgia, serif" font-size="26" letter-spacing="2">MÉXICO</text>
+  </svg>
+</template>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;heroVariant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;split&quot;,&quot;panel&quot;,&quot;statement&quot;],&quot;default&quot;:&quot;split&quot;,&quot;tsType&quot;:&quot;'split' | 'panel' | 'statement'&quot;},&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;es&quot;,&quot;en&quot;],&quot;default&quot;:&quot;es&quot;,&quot;tsType&quot;:&quot;'es' | 'en'&quot;},&quot;approachAnim&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;rail&quot;,&quot;fan&quot;,&quot;squares&quot;],&quot;default&quot;:&quot;squares&quot;,&quot;tsType&quot;:&quot;'rail' | 'fan' | 'squares'&quot;,&quot;section&quot;:&quot;Our approach — scroll animation&quot;},&quot;squareAnchor&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;fixed&quot;,&quot;grow&quot;],&quot;default&quot;:&quot;grow&quot;,&quot;tsType&quot;:&quot;'fixed' | 'grow'&quot;,&quot;section&quot;:&quot;Our approach — scroll animation&quot;},&quot;railStepHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:38,&quot;min&quot;:18,&quot;max&quot;:120,&quot;step&quot;:2,&quot;unit&quot;:&quot;vh&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Our approach — scroll animation&quot;},&quot;railFocusBand&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.6,&quot;min&quot;:0.15,&quot;max&quot;:0.6,&quot;step&quot;:0.01,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Our approach — scroll animation&quot;},&quot;fibField&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ramp&quot;,&quot;sections&quot;],&quot;default&quot;:&quot;ramp&quot;,&quot;tsType&quot;:&quot;'ramp' | 'sections'&quot;,&quot;section&quot;:&quot;Fibonacci field&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { lang: (props.defaultLang === 'en' ? 'en' : 'es'), openFaq: -1, activeSection: '', submitted: false, errors: {}, isNarrow: this.getIsNarrow(), reduced: this.getReduced(), approachForceGrid: false };
+    this.nameRef = React.createRef();
+    this.companyRef = React.createRef();
+    this.emailRef = React.createRef();
+    this.messageRef = React.createRef();
+    this.hpRef = React.createRef();
+    this.approachStageRef = React.createRef();
+    this.approachFanRef = React.createRef();
+    this.approachRailRef = React.createRef();
+    this.squaresStageRef = React.createRef();
+    this.squaresFieldRef = React.createRef();
+    this.railFillRef = React.createRef();
+    this.railNumRef = React.createRef();
+    this.railColRef = React.createRef();
+    this.C = this.buildContent();
+  }
+
+  getIsNarrow(){
+    try { return window.matchMedia('(max-width: 720px)').matches; } catch(e) { return false; }
+  }
+
+  getReduced(){
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) { return false; }
+  }
+
+  setupResponsive(){
+    try {
+      this._mq = window.matchMedia('(max-width: 720px)');
+      this._mqHandler = (e) => this.setState({ isNarrow: e.matches });
+      if (this._mq.addEventListener) this._mq.addEventListener('change', this._mqHandler);
+      else if (this._mq.addListener) this._mq.addListener(this._mqHandler);
+      this._rmq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      this._rmqHandler = (e) => this.setState({ reduced: e.matches });
+      if (this._rmq.addEventListener) this._rmq.addEventListener('change', this._rmqHandler);
+      else if (this._rmq.addListener) this._rmq.addListener(this._rmqHandler);
+    } catch(e) {}
+  }
+
+  componentDidMount(){
+    try {
+      const ids = ['permanece','capital','mexico','equipo','fundadores','contacto'];
+      const els = ids.map(id => document.getElementById(id)).filter(Boolean);
+      this._io = new IntersectionObserver((ents) => {
+        ents.forEach(e => { if (e.isIntersecting) this.setState({ activeSection: e.target.id }); });
+      }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+      els.forEach(el => this._io.observe(el));
+    } catch(e) {}
+    this.syncDocLang();
+    this.animateFibTiles();
+    this.initFloat();
+    this.setupResponsive();
+    this.initApproachAnim();
+  }
+
+  // ── Floating-field motion ───────────────────────────────────────────────
+  // Three coordinated layers read as depth: (1) the Fibonacci backdrop drifts
+  // on a slow infinite sine "breath" and lags the scroll for parallax; (2) each
+  // section's content is scrubbed on a gentle vertical parallax so it feels
+  // suspended, not pinned to the scrollbar; (3) content settles in with a calm
+  // fade as it enters. Everything is gated behind prefers-reduced-motion.
+  initFloat(){
+    try {
+      try { if (window.__vxFloatCleanup) window.__vxFloatCleanup(); } catch(e){}
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const g = window.gsap, ST = window.ScrollTrigger;
+      if (reduce || !g || !ST) return;
+      g.registerPlugin(ST);
+
+      const EASE = 'none';
+      const created = [];
+      const add = (tw) => { created.push(tw); return tw; };
+      const rootEl = document.querySelector('[data-screen-label="Vertus Mexico — Landing"]');
+
+      // (1) The Fibonacci zoom itself is driven by animateFibTiles(). Here we
+      // only add a slow sine "breath" on the field layer so the whole backdrop
+      // floats gently on top of the scroll-driven expansion.
+      const field = document.getElementById('vx-field');
+      let drift;
+      if (field) {
+        drift = g.to(field, { y: 22, scale: 1.04, duration: 15, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 50%' });
+      }
+
+      // (2) Parallax float (y only) via ScrollTrigger scrub, and (3) settle-in
+      // fade (opacity only) via IntersectionObserver. Splitting the two across
+      // different properties lets them coexist on one element — and driving the
+      // reveal off IO (not scroll position) keeps content from ever getting
+      // stuck hidden if the scroll container isn't the window.
+      const sections = Array.prototype.slice.call(document.querySelectorAll('section[data-screen-label]'));
+      const revealTargets = [];
+      sections.forEach((sec) => {
+        const inner = sec.querySelector(':scope > div');
+        if (!inner) return;
+        if (sec.id === 'enfoque') return;
+        const isHero = sec.id === 'top';
+        // Float: content drifts as the section passes, offset from the page.
+        add(g.fromTo(inner, { y: isHero ? 0 : 72 }, {
+          y: isHero ? -110 : -72, ease: EASE,
+          scrollTrigger: { trigger: sec, start: 'top bottom', end: 'bottom top', scrub: 0.7 }
+        }));
+        // Settle-in fade — hero owns the first frame, so it stays lit.
+        if (!isHero) { g.set(inner, { opacity: 0 }); revealTargets.push(inner); }
+      });
+
+      const revealIO = new IntersectionObserver((ents) => {
+        ents.forEach(e => {
+          if (e.isIntersecting) {
+            g.to(e.target, { opacity: 1, duration: 0.7, ease: 'power2.out' });
+            revealIO.unobserve(e.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+      revealTargets.forEach(el => revealIO.observe(el));
+
+      // Safety net: nothing stays invisible past 2s regardless of scroller quirks.
+      const safety = setTimeout(() => { revealTargets.forEach(el => { if (parseFloat(getComputedStyle(el).opacity) < 1) g.to(el, { opacity: 1, duration: 0.4 }); }); }, 2000);
+
+      // Re-measure once fonts/images have settled.
+      setTimeout(() => { try { ST.refresh(); } catch(e){} }, 400);
+
+      window.__vxFloatCleanup = () => {
+        try { created.forEach(tw => { if (tw && tw.scrollTrigger) tw.scrollTrigger.kill(); if (tw) tw.kill(); }); } catch(e){}
+        try { if (drift) drift.kill(); } catch(e){}
+        try { revealIO.disconnect(); } catch(e){}
+        try { clearTimeout(safety); } catch(e){}
+        try { revealTargets.forEach(el => g.set(el, { clearProps: 'opacity' })); } catch(e){}
+        try { if (field) g.set(field, { clearProps: 'transform' }); } catch(e){}
+      };
+    } catch(e) {}
+  }
+
+  syncDocLang(){ try { document.documentElement.lang = this.state.lang; } catch(e){} }
+
+  componentDidUpdate(prevProps, prevState){
+    try { if (prevProps && prevProps.fibField !== this.props.fibField) this.animateFibTiles(); } catch(e){}
+    try {
+      const langChanged = prevState && prevState.lang !== this.state.lang;
+      const narrowChanged = prevState && prevState.isNarrow !== this.state.isNarrow;
+      const reducedChanged = prevState && prevState.reduced !== this.state.reduced;
+      const forceChanged = prevState && prevState.approachForceGrid !== this.state.approachForceGrid;
+      const animChanged = prevProps && prevProps.approachAnim !== this.props.approachAnim;
+      const railTuneChanged = prevProps && (prevProps.railStepHeight !== this.props.railStepHeight || prevProps.railFocusBand !== this.props.railFocusBand);
+      if (langChanged || narrowChanged || reducedChanged || forceChanged || animChanged || railTuneChanged) this.initApproachAnim();
+      else if (this._approachST) {
+        const prog = (this._approachST.progress != null) ? this._approachST.progress : 0;
+        if (this._sqCards && this._sqCards.length) this.applySquares(prog);
+        else if (this._deckCards && this._deckCards.length) this.applyDeck(this._deckPos || 0);
+      }
+    } catch(e){}
+  }
+
+  initApproachAnim(){
+    try { if (this._approachST) { this._approachST.kill(); this._approachST = null; } } catch(e){}
+    try { if (window.__vxRailCleanup) { window.__vxRailCleanup(); window.__vxRailCleanup = null; } } catch(e){}
+    try { if (this._lockStepCleanup) { this._lockStepCleanup(); this._lockStepCleanup = null; } } catch(e){}
+    this._sqCards = null; this._deckCards = null;
+    const raw = this.props.approachAnim;
+    const anim = (raw === 'fan' || raw === 'squares') ? raw : 'rail';
+    if (anim === 'fan') this.initApproachDeck();
+    else if (anim === 'squares') this.initApproachSquares();
+    else this.initApproachRail();
+  }
+
+  // ── Lock-step scroll engine ─────────────────────────────────────
+  // Turns the pinned approach stage from a continuous scrub into discrete
+  // beats. While the stage is pinned (st.isActive), native scroll / touch /
+  // arrow-keys are intercepted, and each gesture fires exactly ONE self-timed
+  // animation from the current step to the next — by tweening the scroll
+  // position across one segment on its own clock (DUR), which the existing
+  // onUpdate scrubs into a full step transition. Further input is swallowed
+  // until that beat finishes plus a short COOLDOWN, so a trackpad flick
+  // advances one step, never several, and the stage HOLDS between gestures
+  // instead of resting mid-transition. At the first/last step a further scroll
+  // is passed through untouched, so the pin releases and the page scrolls on.
+  setupLockStep(st, N){
+    try {
+      try { if (this._lockStepCleanup) { this._lockStepCleanup(); this._lockStepCleanup = null; } } catch(e){}
+      const g = window.gsap;
+      if (!st || !g || !N || N < 2) return;
+      const N1 = N - 1;
+      const DUR = 0.7, COOLDOWN = 130;
+      const proxy = { y: 0 };
+      let animating = false;
+
+      const segTo = (i) => {
+        const s = (st.start != null) ? st.start : 0;
+        const e = (st.end != null) ? st.end : s;
+        return s + (Math.max(0, Math.min(N1, i)) / N1) * (e - s);
+      };
+      const curStep = () => Math.round(Math.max(0, Math.min(1, st.progress || 0)) * N1);
+      const go = (target) => {
+        animating = true;
+        proxy.y = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const toY = segTo(target);
+        try { g.killTweensOf(proxy); } catch(e){}
+        g.to(proxy, {
+          y: toY, duration: DUR, ease: 'none',
+          onUpdate(){ window.scrollTo(0, proxy.y); },
+          onComplete(){ window.scrollTo(0, toY); setTimeout(() => { animating = false; }, COOLDOWN); }
+        });
+      };
+      // Consume the gesture (return true → caller preventDefaults). Returns false
+      // only when we're at an end and the pin should be allowed to release.
+      const step = (dir) => {
+        if (!st.isActive || !dir) return false;
+        if (animating) return true;
+        const target = curStep() + dir;
+        if (target < 0 || target > N1) return false;
+        go(target);
+        return true;
+      };
+
+      const onWheel = (e) => {
+        if (!st.isActive) return;
+        if (animating) { e.preventDefault(); return; }
+        if (Math.abs(e.deltaY) < 3) return;
+        if (step(e.deltaY > 0 ? 1 : -1)) e.preventDefault();
+      };
+      let touchY = null;
+      const onTouchStart = (e) => { touchY = (e.touches && e.touches[0]) ? e.touches[0].clientY : null; };
+      const onTouchMove = (e) => {
+        if (!st.isActive || touchY == null) return;
+        if (animating) { e.preventDefault(); return; }
+        const y = (e.touches && e.touches[0]) ? e.touches[0].clientY : null;
+        if (y == null) return;
+        const dy = touchY - y;
+        if (Math.abs(dy) < 10) return;
+        if (step(dy > 0 ? 1 : -1)) { touchY = y; e.preventDefault(); }
+      };
+      const onTouchEnd = () => { touchY = null; };
+      const onKey = (e) => {
+        if (!st.isActive) return;
+        let dir = 0;
+        if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ' || e.key === 'Spacebar') dir = 1;
+        else if (e.key === 'ArrowUp' || e.key === 'PageUp') dir = -1;
+        else return;
+        if (animating) { e.preventDefault(); return; }
+        if (step(dir)) e.preventDefault();
+      };
+
+      window.addEventListener('wheel', onWheel, { passive: false });
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove', onTouchMove, { passive: false });
+      window.addEventListener('touchend', onTouchEnd, { passive: true });
+      window.addEventListener('keydown', onKey);
+
+      this._lockStepCleanup = () => {
+        try { window.removeEventListener('wheel', onWheel); } catch(e){}
+        try { window.removeEventListener('touchstart', onTouchStart); } catch(e){}
+        try { window.removeEventListener('touchmove', onTouchMove); } catch(e){}
+        try { window.removeEventListener('touchend', onTouchEnd); } catch(e){}
+        try { window.removeEventListener('keydown', onKey); } catch(e){}
+        try { g.killTweensOf(proxy); } catch(e){}
+      };
+    } catch(e){}
+  }
+
+  animateFibTiles(){
+    try {
+      try { if (window.__vxFibCleanup) window.__vxFibCleanup(); } catch(e){}
+
+      const grp = document.getElementById('vx-grow');
+      if (!grp) return;
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const PHI = 1.618033988749895;
+      const mode = (this.props.fibField === 'sections') ? 'sections' : 'ramp';
+
+      // Build ONE golden-rectangle spiral of squares (once). Inward phi
+      // subdivision: each square is phi smaller than the last, spiralling to an
+      // accumulation point. It is exactly self-similar (scale phi + 90 deg per
+      // step), so a 4-square zoom loops with pure scale — the field never ends.
+      const N = 30;
+      if (!this._fibSquares) {
+        let x = 0, y = 0, w = 12000 * PHI, h = 12000, dir = 0;
+        const sq = [];
+        for (let i = 0; i < N; i++) {
+          let s;
+          if (dir === 0) { s = h; sq.push({ x: x + w - s, y: y, s: s }); w -= s; }
+          else if (dir === 1) { s = w; sq.push({ x: x, y: y + h - s, s: s }); h -= s; }
+          else if (dir === 2) { s = h; sq.push({ x: x, y: y, s: s }); x += s; w -= s; }
+          else { s = w; sq.push({ x: x, y: y, s: s }); y += s; h -= s; }
+          dir = (dir + 1) % 4;
+        }
+        const ox = x + w / 2, oy = y + h / 2;   // accumulation point -> origin
+        this._fibSquares = sq.map(r => ({ x: r.x - ox, y: r.y - oy, s: r.s }));
+      }
+      const sq = this._fibSquares;
+
+      // Paint a value ramp whose period is 4 — the geometric loop period — so a
+      // square and the one 4 steps larger share a colour and the zoom wraps with
+      // no colour pop. Every value sits in the dark-forest band, so light overlay
+      // text always clears WCAG AA.
+      const RAMP = ['#152615','#1B311B','#213C20','#2A4A2A'];
+      const NS = 'http://www.w3.org/2000/svg';
+      grp.innerHTML = '';
+      const els = sq.map((r, i) => {
+        const el = document.createElementNS(NS, 'rect');
+        el.setAttribute('x', r.x.toFixed(2));
+        el.setAttribute('y', r.y.toFixed(2));
+        el.setAttribute('width', r.s.toFixed(2));
+        el.setAttribute('height', r.s.toFixed(2));
+        el.setAttribute('fill', RAMP[i % RAMP.length]);
+        el.setAttribute('stroke', '#3A5E38');
+        el.setAttribute('stroke-width', Math.max(0.6, r.s * 0.004).toFixed(2));
+        el.setAttribute('stroke-opacity', '0.6');
+        if (!reduce) el.style.transition = 'fill 480ms cubic-bezier(0.22,0.61,0.36,1)';
+        grp.appendChild(el);
+        return el;
+      });
+      this._fibBaseFill = els.map((e, i) => RAMP[i % RAMP.length]);
+
+      // The active square (plus its next-larger neighbour) carries the accent.
+      // As the field zooms out the accent hands off to the next square in the
+      // sequence — one set of rectangles continuously expanding to the next
+      // largest. Accents stay >= 4.5:1 under the Vellum overlay text.
+      const RAMP_ACCENT = '#3F6631';
+      const SECTION_ACCENTS = ['#2F5220','#2A4A2A','#404041','#3F6631'];
+
+      const VBOX = 1120;
+      const BASE = 14;            // start VERY zoomed in (deep in the spiral)
+      const STEPS = 5.9;          // one long, continuous expansion across the whole page — no loop
+      const TAIL = 1.9;           // >1 = ease-out: expands early, then a long slow tail
+      const SIDE_X = 500;         // start the zoom origin this far to the side (viewBox units), then to center
+      const SIDE_Y = -70;         // slight vertical offset at the start
+      const TARGET = VBOX * 0.8;  // on-screen size that counts as "active"
+
+      this._fibActive = -1;
+      const applyZoom = () => {
+        this._fibTick = false;
+        const se = document.scrollingElement || document.documentElement;
+        const max = (se.scrollHeight - se.clientHeight) || 1;
+        const p = Math.min(1, Math.max(0, se.scrollTop / max));
+        const pe = 1 - Math.pow(1 - p, TAIL);          // ease-out → long slow tail as it expands out
+        const t = pe * STEPS;
+        const phase = t;                               // monotonic — one continuous expansion, no wrap
+        const scale = BASE * Math.pow(PHI, -phase);
+        // Focal drift: start the zoom origin off to the side, then glide it back
+        // to the middle as the field expands out. `foc` = 1 at the top, 0 at the
+        // bottom; SIDE_X is in viewBox units (half-width = 560).
+        const foc = 1 - pe;
+        const tx = SIDE_X * foc;
+        const ty = SIDE_Y * foc;
+        grp.setAttribute('transform', 'translate(' + tx.toFixed(2) + ',' + ty.toFixed(2) + ') scale(' + scale.toFixed(5) + ')');
+        let bestI = 0, bestD = Infinity;
+        for (let i = 0; i < sq.length; i++) {
+          const d = Math.abs(sq[i].s * scale - TARGET);
+          if (d < bestD) { bestD = d; bestI = i; }
+        }
+        if (bestI !== this._fibActive) {
+          this._fibActive = bestI;
+          const accent = (mode === 'sections')
+            ? SECTION_ACCENTS[Math.floor(((t % 4) + 4) % 4) % SECTION_ACCENTS.length]
+            : RAMP_ACCENT;
+          for (let i = 0; i < els.length; i++) els[i].setAttribute('fill', this._fibBaseFill[i]);
+          if (els[bestI]) els[bestI].setAttribute('fill', accent);
+          if (els[bestI + 1]) els[bestI + 1].setAttribute('fill', accent);
+        }
+      };
+
+      if (reduce) { grp.setAttribute('transform', 'translate(' + SIDE_X + ',' + SIDE_Y + ') scale(' + BASE.toFixed(5) + ')'); return; }
+
+      const onScroll = () => { if (!this._fibTick) { this._fibTick = true; requestAnimationFrame(applyZoom); } };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      window.__vxFibCleanup = () => {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onScroll);
+      };
+      applyZoom();
+    } catch(e) {}
+  }
+
+  initApproachDeck(){
+    try {
+      try { if (this._approachST) { this._approachST.kill(); this._approachST = null; } } catch(e){}
+      const reduce = this.getReduced();
+      if (reduce || this.state.isNarrow) return;
+      const stage = this.approachStageRef.current;
+      const fan = this.approachFanRef.current;
+      if (!stage || !fan) return;
+      const g = window.gsap, ST = window.ScrollTrigger;
+      if (!g || !ST) { if (!this.state.approachForceGrid) this.setState({ approachForceGrid: true }); return; }
+      g.registerPlugin(ST);
+      const cards = Array.prototype.slice.call(fan.querySelectorAll('[data-deck-card]'));
+      if (!cards.length) return;
+      this._deckCards = cards;
+      this._deckN = cards.length;
+      const N = this._deckN;
+      // Give every card its own stretch of scroll (~1.1 viewports per step) so a
+      // single card holds focus at a time instead of two blurring past together.
+      const STEP_VH = 110;
+      const endPct = Math.max(300, Math.round((N - 1) * STEP_VH));
+      this._approachST = ST.create({
+        trigger: stage,
+        start: 'top top',
+        end: '+=' + endPct + '%',
+        pin: stage,
+        pinSpacing: true,
+        pinType: 'transform',
+        anticipatePin: 1,
+        // Lock-step (setupLockStep) drives discrete beats — no scrub-snap needed.
+        onUpdate: (self) => this.applyDeck(this.deckPos(self.progress)),
+        onRefresh: (self) => this.applyDeck(this.deckPos(self.progress))
+      });
+      this.applyDeck(0);
+      this.setupLockStep(this._approachST, N);
+      setTimeout(() => { try { ST.refresh(); } catch(e){} }, 300);
+    } catch(e){}
+  }
+
+  // ── Fibonacci-square build-up ───────────────────────────────────────────
+  // Each step is a square whose SIDE = sum of the previous two sides (the
+  // Fibonacci recurrence), tiled in an authentic pinwheel: right -> bottom ->
+  // left -> top. The whole cluster is rescaled every frame so the newest
+  // scrolled-to square holds one fixed on-screen size; every earlier square
+  // therefore shrinks by the true Fibonacci ratio, step 1 heading toward
+  // microscopic. Two anchor modes (prop `squareAnchor`): 'fixed' pins the
+  // newest square to stage centre (eye stays put, history spirals around it);
+  // 'grow' centres the whole accumulated golden rectangle (eye follows the
+  // build). Pinned stage + snap per step, mirroring the deck variant.
+  buildSquareGeom(){
+    const N = this._sqN || 8;
+    const fib = [1, 1];
+    while (fib.length < N) fib.push(fib[fib.length - 1] + fib[fib.length - 2]);
+    const sides = ['right', 'bottom', 'left', 'top'];
+    let box = { L: 0, T: 0, R: fib[0], B: fib[0] };
+    const sq = [{ x: 0, y: 0, s: fib[0] }];
+    const boxes = [{ L: box.L, T: box.T, R: box.R, B: box.B }];
+    for (let i = 1; i < N; i++){
+      const s = fib[i];
+      const side = sides[(i - 1) % 4];
+      if (side === 'right'){ sq.push({ x: box.R, y: box.T, s: s }); box.R += s; }
+      else if (side === 'bottom'){ sq.push({ x: box.L, y: box.B, s: s }); box.B += s; }
+      else if (side === 'left'){ sq.push({ x: box.L - s, y: box.T, s: s }); box.L -= s; }
+      else { sq.push({ x: box.L, y: box.T - s, s: s }); box.T -= s; }
+      boxes.push({ L: box.L, T: box.T, R: box.R, B: box.B });
+    }
+    this._sqGeom = { fib: fib, sq: sq, boxes: boxes };
+  }
+
+  initApproachSquares(){
+    try {
+      try { if (this._approachST) { this._approachST.kill(); this._approachST = null; } } catch(e){}
+      const reduce = this.getReduced();
+      if (reduce || this.state.isNarrow) return;
+      const stage = this.squaresStageRef.current;
+      const field = this.squaresFieldRef.current;
+      if (!stage || !field) return;
+      const g = window.gsap, ST = window.ScrollTrigger;
+      if (!g || !ST) { if (!this.state.approachForceGrid) this.setState({ approachForceGrid: true }); return; }
+      g.registerPlugin(ST);
+      const cards = Array.prototype.slice.call(field.querySelectorAll('[data-sq-card]'));
+      if (!cards.length) return;
+      this._sqCards = cards;
+      this._sqN = cards.length;
+      this.buildSquareGeom();
+      const N = this._sqN;
+      // Lock-step: the stage pins, and setupLockStep converts scroll into
+      // discrete beats — each gesture plays one full square-expansion (eased by
+      // applySquares' smootherstep) and HOLDS, never resting mid-transition.
+      // The pinned distance below just gives each beat scroll room to map into.
+      const STEP_VH = 80;
+      const endPct = Math.max(300, Math.round((N - 1) * STEP_VH));
+      this._approachST = ST.create({
+        trigger: stage,
+        start: 'top top',
+        end: '+=' + endPct + '%',
+        pin: stage,
+        pinSpacing: true,
+        pinType: 'transform',
+        anticipatePin: 1,
+        onUpdate: (self) => this.applySquares(self.progress),
+        onRefresh: (self) => this.applySquares(self.progress)
+      });
+      this.applySquares(0);
+      this.setupLockStep(this._approachST, N);
+      setTimeout(() => { try { ST.refresh(); } catch(e){} }, 300);
+    } catch(e){}
+  }
+
+  applySquares(p){
+    try {
+      const geom = this._sqGeom;
+      const cards = this._sqCards;
+      const field = this.squaresFieldRef.current;
+      if (!geom || !cards || !field) return;
+      const fib = geom.fib, sq = geom.sq, boxes = geom.boxes;
+      const N = this._sqN;
+      const FW = field.clientWidth || 1, FH = field.clientHeight || 1;
+      const TARGET = Math.min(FW, FH) * 0.52;         // fixed on-screen side of the newest square
+      const raw = Math.min(1, Math.max(0, p)) * (N - 1);
+      const k = Math.min(N - 2, Math.floor(raw));
+      const f = raw - k;
+      const ef = f * f * f * (f * (f * 6 - 15) + 10); // smootherstep
+      const effIndex = (raw >= N - 1) ? (N - 1) : (k + ef);
+      const kk = Math.min(N - 1, Math.floor(effIndex));
+      let effSide;
+      if (kk >= N - 1) effSide = fib[N - 1];
+      else { const fr = effIndex - kk; effSide = fib[kk] * Math.pow(fib[kk + 1] / fib[kk], fr); }
+      const scale = TARGET / effSide;
+
+      // Anchor origin: the coord-space point that maps to stage centre.
+      const mode = (this.props.squareAnchor === 'grow') ? 'grow' : 'fixed';
+      let ox, oy;
+      if (mode === 'fixed') {
+        const cx = (i) => sq[i].x + fib[i] / 2, cy = (i) => sq[i].y + fib[i] / 2;
+        if (kk >= N - 1) { ox = cx(N - 1); oy = cy(N - 1); }
+        else { const fr = effIndex - kk; ox = cx(kk) + (cx(kk + 1) - cx(kk)) * fr; oy = cy(kk) + (cy(kk + 1) - cy(kk)) * fr; }
+      } else {
+        const bx = (i) => (boxes[i].L + boxes[i].R) / 2, by = (i) => (boxes[i].T + boxes[i].B) / 2;
+        if (kk >= N - 1) { ox = bx(N - 1); oy = by(N - 1); }
+        else { const fr = effIndex - kk; ox = bx(kk) + (bx(kk + 1) - bx(kk)) * fr; oy = by(kk) + (by(kk + 1) - by(kk)) * fr; }
+      }
+
+      const apx = FW / 2, apy = FH / 2;
+      for (let j = 0; j < N; j++){
+        const el = cards[j];
+        const size = fib[j] * scale;
+        const sx = apx + (sq[j].x - ox) * scale;
+        const sy = apy + (sq[j].y - oy) * scale;
+        const op = Math.max(0, Math.min(1, effIndex - j + 1));
+        el.style.width = size.toFixed(1) + 'px';
+        el.style.height = size.toFixed(1) + 'px';
+        el.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px)';
+        el.style.opacity = op.toFixed(3);
+        el.style.zIndex = String(100 + j);
+        el.style.pointerEvents = op < 0.05 ? 'none' : 'auto';
+        el.style.borderColor = (size >= TARGET * 0.86) ? '#4C7A38' : '#2A4A2A';
+        this.setSquareTier(el, size, TARGET);
+      }
+    } catch(e){}
+  }
+
+  // Progressive disclosure keyed to the square's size RELATIVE to the newest
+  // (TARGET). The newest square (ratio ~1) always shows num + title + body; the
+  // previous one (~0.62) drops to num + title; older ones to num only, then to
+  // a bare tile — so whatever step you've scrolled to reads in full while its
+  // history recedes.
+  setSquareTier(el, size, target){
+    try {
+      const r = size / (target || 1);
+      const num = el.querySelector('[data-sq-num]');
+      const title = el.querySelector('[data-sq-title]');
+      const body = el.querySelector('[data-sq-body]');
+      if (num) num.style.opacity = r >= 0.24 ? '1' : '0';
+      if (title) title.style.opacity = r >= 0.42 ? '1' : '0';
+      if (body) body.style.opacity = r >= 0.72 ? '1' : '0';
+    } catch(e){}
+  }
+
+  // Sticky-rail: the number+line cluster tracks the viewport centre (where the
+  // focused step sits) and is clamped to the first/last step centres, so it
+  // rides with step 1 on entry and stays locked to step 8 on exit — it never
+  // floats past either end. Each step fades/lifts by its distance from centre,
+  // with the falloff band scaled to the step height so exactly one step is lit
+  // at a time no matter how tight the steps are. Driven off
+  // getBoundingClientRect() every frame, so it tracks the scrollbar 1:1.
+  initApproachRail(){
+    try {
+      const reduce = this.getReduced();
+      if (reduce || this.state.isNarrow) return;
+      const wrap = this.approachRailRef.current;
+      if (!wrap) return;
+      const steps = Array.prototype.slice.call(wrap.querySelectorAll('[data-rail-step]'));
+      if (!steps.length) return;
+      const col = this.railColRef.current;
+      const cell = col ? col.parentElement : null;
+      const fill = this.railFillRef.current;
+      const numEl = this.railNumRef.current;
+      const bandTune = Math.min(0.6, Math.max(0.15, this.props.railFocusBand != null ? this.props.railFocusBand : 0.6));
+      let lastN = null;
+      this._railNumY = null;
+
+      const tick = () => {
+        this._railTick = false;
+        const vh = window.innerHeight;
+        const center = vh * 0.5;
+
+        const N = steps.length;
+        const bc = new Array(N), tc = new Array(N);
+        for (let i = 0; i < N; i++){
+          const br = steps[i].getBoundingClientRect();
+          bc[i] = br.top + br.height / 2;               // box centre
+          const tEl = steps[i].firstElementChild;       // the <h3> heading
+          const tr = (tEl || steps[i]).getBoundingClientRect();
+          tc[i] = tr.top + tr.height / 2;               // heading centre
+        }
+
+        // Uniform-pitch index: map the reading line to a continuous step index
+        // off the AVERAGE spacing, so the digit flips at an even cadence the
+        // whole way down — independent of small per-step height differences,
+        // which were making the early steps linger and the late ones race.
+        const pitch = Math.max(1, (bc[N - 1] - bc[0]) / Math.max(1, N - 1));
+        const ci = (center - bc[0]) / pitch;
+        const active = Math.min(N - 1, Math.max(0, Math.round(ci)));
+        const bandIdx = 0.5 + bandTune;                 // focus falloff, in index units
+
+        let activeEased = 0;
+        for (let i = 0; i < N; i++){
+          const di = Math.abs(i - ci);
+          const focus = Math.max(0, 1 - di / bandIdx);
+          const eased = focus * focus * (3 - 2 * focus); // smoothstep
+          steps[i].style.opacity = (0.22 + eased * 0.78).toFixed(3);
+          const y = (1 - eased) * 24 * (i < ci ? -1 : 1);
+          steps[i].style.transform = 'translateY(' + y.toFixed(1) + 'px)';
+          if (i === active) activeEased = eased;
+        }
+
+        // Lock the numeral to the ACTIVE step's heading line. `base` is the
+        // reading line (viewport centre) clamped to the first/last box so the
+        // cluster rides step 1 on entry and step 8 on exit; the heading's offset
+        // within its box is added so the numeral reads level with the heading,
+        // not the box centre / mid-body. Both terms are scroll-stable within a
+        // step, so there's no sawtooth — just a small eased hop on step change.
+        if (col && cell) {
+          // Cap how far below the reading line the numeral may sit while step 1
+          // is still entering — otherwise it starts down at the box's actual
+          // (still off-centre) position and has to travel the whole way up.
+          const enterCap = center + vh * 0.3;
+          // Only let enterCap pull the numeral up while step 1 is actually
+          // approaching the viewport. When the rail is still far below (e.g.
+          // on initial load, well before the "Sabemos que..." paragraph),
+          // skip it — otherwise this clamp yanks the numeral up to sit near
+          // the top of the page long before the section is anywhere close.
+          const base = bc[0] < vh
+            ? Math.min(Math.min(Math.max(center, bc[0]), bc[N - 1]), enterCap)
+            : Math.min(Math.max(center, bc[0]), bc[N - 1]);
+          const headOffset = tc[active] - bc[active];
+          // Small upward nudge: the heading's own line-height leaves the cap-
+          // height sitting a touch above its geometric centre, so anchoring
+          // dead-on tc[active] reads as slightly low next to "Conversemos".
+          const target = base + headOffset - 8;
+          if (this._railNumY == null || !isFinite(this._railNumY)) this._railNumY = target;
+          this._railNumY += (target - this._railNumY) * 0.3;
+          const cellTop = cell.getBoundingClientRect().top;
+          const numHalf = (numEl && numEl.offsetHeight) ? numEl.offsetHeight / 2 : 30;
+          col.style.transform = 'translateY(' + (this._railNumY - (cellTop + numHalf)).toFixed(1) + 'px)';
+          // Fade the numeral+line in step with its matching heading's own
+          // focus fade, so the rail visually arrives together with
+          // "Conversemos" (or whichever step is active) instead of sitting
+          // at full brightness the whole time it's tracking toward it.
+          col.style.opacity = (0.22 + activeEased * 0.78).toFixed(3);
+        }
+
+        const passed = Math.min(1, Math.max(0, ci / Math.max(1, N - 1)));
+        if (fill) fill.style.height = (passed * 100).toFixed(2) + '%';
+        const n = steps[active] ? steps[active].getAttribute('data-n') : null;
+        if (n && n !== lastN) { lastN = n; if (numEl) numEl.textContent = n; }
+      };
+
+      const onScroll = () => { if (!this._railTick) { this._railTick = true; requestAnimationFrame(tick); } };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      window.__vxRailCleanup = () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); };
+      tick();
+      setTimeout(tick, 300);
+    } catch(e){}
+  }
+
+  // Map raw scroll progress (0..1) to a card position (0..N-1). Smootherstep
+  // eases with zero velocity AND acceleration into each integer, so a card
+  // decelerates as it reaches centre and lingers there before the next takes
+  // over — no jerk, and focus rests on one card at a time. Never fully frozen,
+  // so scrolling always stays responsive.
+  deckPos(p){
+    const N = this._deckN || 1;
+    if (N <= 1) return 0;
+    const raw = Math.min(1, Math.max(0, p)) * (N - 1);
+    const k = Math.floor(raw);
+    if (k >= N - 1) return N - 1;
+    const f = raw - k;
+    const e = f * f * f * (f * (f * 6 - 15) + 10); // smootherstep
+    return k + e;
+  }
+
+  applyDeck(pos){
+    try {
+      this._deckPos = pos;
+      const cards = this._deckCards;
+      if (!cards) return;
+      const OX = 46, OY = 12, ROT = 2.2, SS = 0.07;
+      for (let i = 0; i < cards.length; i++){
+        const el = cards[i];
+        const delta = i - pos;
+        let x, y, r, s, op, z;
+        if (delta >= 0){
+          const d = Math.min(delta, 4);
+          x = d * OX; y = d * OY; r = d * ROT;
+          s = Math.max(0.6, 1 - d * SS);
+          op = delta > 3.3 ? 0 : Math.max(0, 1 - d * 0.28);
+          z = Math.round(300 - d * 20);
+        } else {
+          const a = -delta;
+          if (a >= 1){ op = 0; x = -74; y = -8; r = -3; s = 1.1; z = 250; }
+          else { x = -a * 74; y = -a * 8; r = -a * 3; s = 1 + a * 0.10; op = 1 - a; z = Math.round(320 - a * 8); }
+        }
+        op = Math.max(0, Math.min(1, op));
+        el.style.transform = 'translate(-50%,-50%) translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) rotate(' + r.toFixed(2) + 'deg) scale(' + s.toFixed(3) + ')';
+        el.style.opacity = String(op);
+        el.style.zIndex = String(z);
+        el.style.pointerEvents = op < 0.06 ? 'none' : 'auto';
+      }
+    } catch(e){}
+  }
+
+  jumpToCard(i){
+    try {
+      const st = this._approachST;
+      if (!st) return;
+      const N = this._sqCards ? (this._sqN || 8) : (this._deckN || 8);
+      const frac = N > 1 ? (i / (N - 1)) : 0;
+      const target = st.start + frac * (st.end - st.start);
+      window.scrollTo({ top: target, behavior: this.state.reduced ? 'auto' : 'smooth' });
+    } catch(e){}
+  }
+
+  componentWillUnmount(){ if (this._io) this._io.disconnect(); try { if (window.__vxFloatCleanup) window.__vxFloatCleanup(); } catch(e){} try { if (window.__vxRailCleanup) window.__vxRailCleanup(); } catch(e){} try { if (this._approachST) this._approachST.kill(); } catch(e){} try { if (this._mq && this._mqHandler) { if (this._mq.removeEventListener) this._mq.removeEventListener('change', this._mqHandler); else if (this._mq.removeListener) this._mq.removeListener(this._mqHandler); } } catch(e){} try { if (this._rmq && this._rmqHandler) { if (this._rmq.removeEventListener) this._rmq.removeEventListener('change', this._rmqHandler); else if (this._rmq.removeListener) this._rmq.removeListener(this._rmqHandler); } } catch(e){} }
+
+  toES = () => this.setState({ lang: 'es' }, () => this.syncDocLang());
+  toEN = () => this.setState({ lang: 'en' }, () => this.syncDocLang());
+  toggleFaq(i){ this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i })); }
+  validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  onSubmit = (e) => {
+    e.preventDefault();
+    if (this.hpRef.current && this.hpRef.current.value) return;
+    const errs = {};
+    const name = (this.nameRef.current && this.nameRef.current.value || '').trim();
+    const email = (this.emailRef.current && this.emailRef.current.value || '').trim();
+    const msg = (this.messageRef.current && this.messageRef.current.value || '').trim();
+    if (!name) errs.name = true;
+    if (!this.validEmail(email)) errs.email = true;
+    if (!msg) errs.message = true;
+    if (Object.keys(errs).length) { this.setState({ errors: errs, submitted: false }); return; }
+    this.setState({ errors: {}, submitted: true });
+  };
+
+  renderVals(){
+    const lang = this.state.lang;
+    const c = this.C[lang];
+    const faq = c.faq.map((it, i) => ({
+      q: it.q, a: it.a,
+      open: this.state.openFaq === i,
+      icon: this.state.openFaq === i ? '\u2013' : '+',
+      ariaExpanded: this.state.openFaq === i ? 'true' : 'false',
+      onToggle: () => this.toggleFaq(i),
+      panelId: 'vx-faq-panel-' + i
+    }));
+    const navItems = c.nav.map(n => ({
+      label: n.label, href: n.href,
+      style: 'font-family:\'Prompt\',sans-serif;font-weight:500;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;white-space:nowrap;transition:color .2s;color:' + (this.state.activeSection === n.href.slice(1) ? '#E8E3D2' : '#AFBEAF') + ';'
+    }));
+    const t = Object.assign({}, c, { faq });
+    const stepPrefix = lang === 'es' ? 'Ir al paso ' : 'Go to step ';
+    const deckSteps = c.steps.map((s, i) => ({
+      n: s.n, title: s.title, body: s.body, idx: i,
+      ariaLabel: stepPrefix + s.n + ': ' + s.title,
+      onJump: () => this.jumpToCard(i),
+      onKey: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.jumpToCard(i); } }
+    }));
+
+    const onBtn = { fontFamily: "'Prompt',sans-serif", fontWeight: 600, fontSize: '12px', letterSpacing: '.08em', padding: '7px 15px', border: 'none', cursor: 'pointer', background: 'transparent', color: '#AFBEAF', transition: 'all .2s' };
+    const activeBtn = Object.assign({}, onBtn, { background: '#8BC53F', color: '#151515' });
+    const errs = this.state.errors;
+    const hv = this.props.heroVariant || 'split';
+    const VELLUM = { '--th-bg': '#E8E3D2', '--th-line': 'rgba(26,46,26,.28)', '--th-eyebrow': '#2A4A2A', '--th-head': '#1A2E1A', '--th-body': '#33402F', '--th-muted': '#4A5642', '--th-text': '#1A2E1A', '--th-quote': '#2A3A26', '--th-accent': '#2A4A2A', '--th-card-bg': 'rgba(255,255,255,.45)', '--th-card-border': 'rgba(26,46,26,.22)' };
+    const DARKX = { '--th-bg': 'rgba(21,38,21,.6)', '--th-line': '#2A4A2A', '--th-eyebrow': '#8BC53F', '--th-head': '#E8E3D2', '--th-body': '#AFBEAF', '--th-muted': '#AFBEAF', '--th-text': '#E8E3D2', '--th-quote': '#D9E0D9', '--th-accent': '#8BC53F', '--th-card-bg': '#163016', '--th-card-border': '#2A4A2A', '--th-us-bg': '#E8E3D2', '--th-us-border': 'rgba(26,46,26,.28)', '--th-us-label': '#2A4A2A', '--th-us-head': '#1A2E1A', '--th-us-body': '#33402F' };
+    const isNarrow = this.state.isNarrow;
+    const heroGridStyle = 'position:relative;z-index:2;width:100%;max-width:1240px;margin:0 auto;display:grid;grid-template-columns:' + (isNarrow ? '1fr' : '1.618fr 1fr') + ';gap:clamp(28px,5vw,72px);align-items:end;';
+    const diffCardsStyle = 'display:grid;grid-template-columns:' + (isNarrow ? '1fr' : '1fr 1fr') + ';gap:18px;margin-top:54px;';
+    const teamGridStyle = 'max-width:1240px;margin:0 auto;display:grid;grid-template-columns:' + (isNarrow ? '1fr' : '1.618fr 1fr') + ';gap:clamp(34px,5vw,80px);align-items:start;';
+    const statsGridStyle = 'display:grid;grid-template-columns:' + (isNarrow ? '1fr' : '1fr 1fr') + ';border-radius:13px;overflow:hidden;background:#E8E3D2;';
+    const foundCardsStyle = 'display:grid;grid-template-columns:' + (isNarrow ? '1fr' : '1fr 1fr') + ';gap:18px;margin-top:50px;';
+    const contactGridStyle = 'max-width:1240px;margin:0 auto;position:relative;display:grid;grid-template-columns:' + (isNarrow ? '1fr' : '1.2fr 1fr') + ';gap:clamp(34px,5vw,80px);align-items:start;';
+    const approachAnim = (this.props.approachAnim === 'fan' || this.props.approachAnim === 'squares') ? this.props.approachAnim : 'rail';
+    const showApproachGrid = this.state.reduced || this.state.isNarrow || this.state.approachForceGrid;
+    const railStepH = this.props.railStepHeight != null ? this.props.railStepHeight : 34;
+    const railStepStyle = 'display:flex;flex-direction:column;justify-content:center;will-change:transform,opacity;min-height:' + railStepH + 'vh;padding:1.5vh 0;';
+    const ariaDescribedbyName = errs.name ? 'vx-err-name' : '';
+    const ariaDescribedbyEmail = errs.email ? 'vx-err-email' : '';
+    const ariaDescribedbyMsg = errs.message ? 'vx-err-message' : '';
+
+    return {
+      t, navItems, lang,
+      vellumTheme: VELLUM, greenTheme: DARKX,
+      isES: lang === 'es', isEN: lang === 'en',
+      toES: this.toES, toEN: this.toEN,
+      esPressed: lang === 'es' ? 'true' : 'false',
+      enPressed: lang === 'en' ? 'true' : 'false',
+      esBtnStyle: lang === 'es' ? activeBtn : onBtn,
+      enBtnStyle: lang === 'en' ? activeBtn : onBtn,
+      heroSplit: hv === 'split', heroPanel: hv === 'panel', heroStatement: hv === 'statement',
+      nameRef: this.nameRef, companyRef: this.companyRef, emailRef: this.emailRef, messageRef: this.messageRef, hpRef: this.hpRef,
+      onSubmit: this.onSubmit,
+      submitted: this.state.submitted,
+      formVisible: !this.state.submitted,
+      errName: !!errs.name, errEmail: !!errs.email, errMsg: !!errs.message,
+      ariaName: errs.name ? 'true' : 'false', ariaEmail: errs.email ? 'true' : 'false', ariaMsg: errs.message ? 'true' : 'false',
+      ariaDescribedbyName: ariaDescribedbyName, ariaDescribedbyEmail: ariaDescribedbyEmail, ariaDescribedbyMsg: ariaDescribedbyMsg,
+      heroGridStyle: heroGridStyle, diffCardsStyle: diffCardsStyle, teamGridStyle: teamGridStyle, statsGridStyle: statsGridStyle, foundCardsStyle: foundCardsStyle, contactGridStyle: contactGridStyle,
+      deckSteps: deckSteps,
+      approachStageRef: this.approachStageRef, approachFanRef: this.approachFanRef,
+      approachRailRef: this.approachRailRef, railFillRef: this.railFillRef, railNumRef: this.railNumRef, railColRef: this.railColRef,
+      squaresStageRef: this.squaresStageRef, squaresFieldRef: this.squaresFieldRef,
+      railStepStyle: railStepStyle,
+      approachFan: !showApproachGrid && approachAnim === 'fan',
+      approachRail: !showApproachGrid && approachAnim === 'rail',
+      approachSquares: !showApproachGrid && approachAnim === 'squares',
+      approachGrid: showApproachGrid
+    };
+  }
+
+  buildContent(){
+    return {
+      es: {
+        langES: 'ES', langEN: 'EN',
+        placeholderTag: 'Marcador de posición',
+        navLabel: 'Navegación principal',
+        skipLink: 'Saltar al contenido',
+        requiredNote: 'Los campos con * son obligatorios.',
+        nav: [
+          { label: 'Lo que permanece', href: '#permanece' },
+          { label: 'Capital permanente', href: '#capital' },
+          { label: 'Para fundadores', href: '#fundadores' },
+          { label: 'Equipo', href: '#equipo' },
+          { label: 'Contáctanos', href: '#contacto' }
+        ],
+        heroEyebrow: 'Capital permanente · México',
+        heroTitle: 'Capital permanente en México.',
+        heroLead: 'Adquirimos empresas consolidadas de software vertical en México y las conservamos de forma permanente. Nunca vendemos nuestras empresas. Solo un hogar estable, a largo plazo.',
+        heroParent: 'Vertus Group Mexico forma parte de The Vertus Group y Jonas Software, una empresa de Constellation Software (TSX: CSU).',
+        ctaStart: 'Inicia una conversación →',
+        stayEyebrow: 'Antes que nada',
+        stayTitle: 'Lo que permanece igual.',
+        stayCards: [
+          { tag: 'Tu gente', title: 'Tu equipo.', body: 'Compramos empresas por las personas que las construyeron, no para reemplazarlas.' },
+          { tag: 'Tu identidad', title: 'Tu marca permanece.', body: 'Tu nombre, tu producto y tu relación con los clientes continúan tal como están.' },
+          { tag: 'Tu lugar', title: 'Tu empresa se queda aquí.', body: 'Operamos los negocios donde están. Estamos construyendo en México, a largo plazo.' },
+          { tag: 'Tu futuro', title: 'Nunca revendemos.', body: 'Las empresas de Constellation se conservan de forma permanente. Sin salida a tres años, sin segunda venta, sin reloj de fondo de inversión.' }
+        ],
+        diffEyebrow: 'La diferencia',
+        diffTitle: 'Por qué el capital permanente es diferente.',
+        diffBody: 'La mayoría de los compradores piensa en su salida desde el día que firma. Nosotros no. Como parte de The Vertus Group —que nunca ha vendido una empresa y nunca lo hará— y de Constellation Software, con más de 1,000 empresas de software en el mundo, nuestro modelo es adquirir buenas empresas y conservarlas, ayudándolas a crecer durante décadas y no por trimestres.',
+        diffThemLabel: 'Otros',
+        diffThemHead: 'Una salida con reloj',
+        diffThemBody: 'Reventa, consolidación, un retorno que entregar a inversionistas.',
+        diffUsLabel: 'Nosotros',
+        diffUsHead: 'Un hogar, conservado',
+        diffUsBody: 'Adquirir, cuidar y hacer crecer la empresa durante décadas.',
+        mxEyebrow: 'Ya estamos en México',
+        mxTitle: 'Llegamos para quedarnos.',
+        mxBody: 'Vertus Mexico es un dueño activo y presente en el mercado de software vertical mexicano —con empresas en operación, equipos que siguen al frente y relaciones que construimos para décadas. Esto es lo que dicen quienes ya trabajan con nosotros.',
+        testimonials: [
+          { slotId: 'vx-test-founder', slotHint: 'Foto del fundador', quote: 'CITA DEL FUNDADOR — por qué eligieron un dueño permanente (2 frases)', name: 'NOMBRE · Fundador, empresa del portafolio' },
+          { slotId: 'vx-test-employee', slotHint: 'Foto del empleado', quote: 'CITA DE EMPLEADO — cómo cambió (para bien) tras la adquisición', name: 'NOMBRE · Líder de equipo, empresa del portafolio' },
+          { slotId: 'vx-test-advisor', slotHint: 'Foto del asesor', quote: 'CITA DE ASESOR M&A — sobre la certeza y limpieza del proceso', name: 'NOMBRE · Asesor M&A' }
+        ],
+        teamEyebrow: 'El equipo',
+        teamTitle: 'Presencia local en México, respaldada por todo el equipo de Vertus.',
+        teamBody: 'Vertus Group Mexico opera de forma directa y local en México —el punto de contacto está aquí, en tu mismo país y zona horaria. Detrás está el equipo completo de The Vertus Group: especialistas en M&A, operaciones, finanzas y legal, con décadas de experiencia adquiriendo y haciendo crecer empresas de software vertical en más de 36 compañías.',
+        teamLinks: [
+          { label: 'Conoce al equipo de Vertus →', href: 'https://www.thevertusgroup.com/our-team.htm' },
+          { label: 'Recursos y novedades de Vertus →', href: 'https://www.thevertusgroup.com/blog/' }
+        ],
+        stats: [
+          { value: '36+', label: 'empresas en el portafolio', color: '#1A2E1A' },
+          { value: '1,000+', label: 'personas en el ecosistema', color: '#1A2E1A' },
+          { value: '2003', label: 'desde nuestra primera adquisición', color: '#1A2E1A' },
+          { value: '∞', label: 'horizonte de propiedad', color: '#1A2E1A' }
+        ],
+        foundEyebrow: 'Para fundadores',
+        foundTitle: 'Qué buscamos.',
+        foundBody: 'Adquirimos empresas de software vertical rentables y consolidadas, y les damos un hogar permanente. Esto es lo que buscamos.',
+        bizHead: 'Perfil del negocio',
+        bizItems: ['Software B2B', 'SaaS o en sitio', 'Enfoque en mercado vertical', 'Software de misión crítica', 'Soluciones propietarias'],
+        finHead: 'Perfil financiero',
+        finItems: ['Ingresos mayormente recurrentes', 'En punto de equilibrio o rentable', 'Baja pérdida de clientes'],
+        foundCtaQ: '¿Tienes curiosidad sobre lo que valdría tu empresa con un dueño permanente?',
+        foundCtaNote: 'Una primera conversación es confidencial y sin compromiso.',
+        faqEyebrow: 'Respuestas claras',
+        faqTitle: 'Tus dudas, respondidas con honestidad.',
+        faq: [
+          { q: '¿Van a reemplazar a mi equipo?', a: 'Por lo general, los equipos operativos se mantienen en su lugar. Tú conoces tu negocio. Nos enfocamos en adquirir equipos de alto desempeño con conocimiento profundo de su industria.' },
+          { q: '¿Van a mover mi empresa o fusionarla con otra cosa?', a: 'No. Tu empresa sigue operando como tal, donde está, bajo su propia marca. No consolidamos los negocios en una sola máquina.' },
+          { q: '¿La van a vender otra vez en unos años?', a: 'No. Esto es el centro de lo que nos hace diferentes. The Vertus Group nunca ha vendido una empresa y nunca lo hará: conservamos los negocios de forma permanente. No hay reloj de salida.' },
+          { q: '¿Qué pasa conmigo después de la venta?', a: 'Algunos fundadores se quedan y siguen liderando con nuevo respaldo detrás; otros se retiran en una transición acordada. Lo diseñamos según lo que tú quieras.' },
+          { q: '¿Está segura mi información si solo quiero explorar?', a: 'Sí. La primera conversación es confidencial y sin compromiso. No se comparte nada y no hay presión para avanzar.' }
+        ],
+        appEyebrow: 'Nuestro enfoque',
+        appTitle: 'Nuestro enfoque para una adquisición sin sobresaltos.',
+        appBody: 'Sabemos que construir tu empresa tomó años de dedicación, y queremos ayudar a asegurar su futuro y el tuyo. Este es el camino que recorremos juntos, con transparencia en cada paso.',
+        steps: [
+          { n: '1', title: 'Conversemos', body: 'Empezamos con una conversación. Nuestro equipo escucha, entiende tu visión y atiende tus dudas, para que estés cómodo en cada paso.' },
+          { n: '2', title: 'Habla con un operador', body: 'Conoce a profesionales que ya recorrieron este camino. Te darán claridad sobre el proceso y cómo tu empresa puede pasar a su siguiente capítulo sin fricción.' },
+          { n: '3', title: 'Firma un acuerdo de confidencialidad', body: 'Tu información está segura con nosotros. El acuerdo de confidencialidad protege tus datos sensibles para que explores la venta en un entorno seguro.' },
+          { n: '4', title: 'Hablemos del encaje', body: 'Creemos en alianzas alineadas con tus metas. Veamos cómo tu empresa encaja en nuestra visión de largo plazo y qué soluciones se ajustan a tu caso.' },
+          { n: '5', title: 'Oferta', body: 'Recibe una oferta justa y transparente, basada en el valor de tu empresa de software, para que tomes una decisión informada.' },
+          { n: '6', title: 'Debida diligencia', body: 'Revisamos los detalles a fondo para asegurar una transición tranquila. Nuestro enfoque minucioso está diseñado para evitar sorpresas.' },
+          { n: '7', title: 'Cierre', body: 'Con la documentación lista, cerramos. El proceso está pensado para ser eficiente y claro, respetando tus tiempos.' },
+          { n: '8', title: 'Integración', body: 'Bienvenido a la familia Vertus. Tu empresa se integra al portafolio y aprovecha nuestros recursos, experiencia y compromiso permanente con su crecimiento.' }
+        ],
+        finalTitle: '¿Pensando en el futuro de tu empresa?',
+        finalBody: 'Hablemos —de forma confidencial y sin compromiso. Hablarás directamente con uno de nuestros líderes operativos o de M&A.',
+        whatsappLabel: 'O escríbenos por WhatsApp',
+        formName: 'Nombre', formCompany: 'Empresa', formEmail: 'Correo', formMessage: 'Mensaje', formSend: 'Enviar →',
+        formNote: 'Confidencial. Solo lo usamos para responderte.',
+        errName: 'Escribe tu nombre.',
+        errEmail: 'Escribe un correo válido.',
+        errMessage: 'Cuéntanos brevemente.',
+        formSuccess: 'Gracias. Te responderemos pronto.'
+      },
+      en: {
+        langES: 'ES', langEN: 'EN',
+        placeholderTag: 'Placeholder',
+        navLabel: 'Main navigation',
+        skipLink: 'Skip to content',
+        requiredNote: 'Fields marked with * are required.',
+        nav: [
+          { label: 'What stays the same', href: '#permanece' },
+          { label: 'Why permanent capital', href: '#capital' },
+          { label: 'For founders', href: '#fundadores' },
+          { label: 'Team', href: '#equipo' },
+          { label: 'Get in touch', href: '#contacto' }
+        ],
+        heroEyebrow: 'Permanent capital · Mexico',
+        heroTitle: 'Permanent capital in Mexico.',
+        heroLead: 'We acquire established vertical-market software businesses in Mexico and hold them for good. We never sell our businesses. Just a stable owner for the long term.',
+        heroParent: 'Vertus Mexico is part of The Vertus Group and Jonas Software, a Constellation Software Company (TSX: CSU).',
+        ctaStart: 'Start a conversation →',
+        stayEyebrow: 'Before anything else',
+        stayTitle: 'What stays the same.',
+        stayCards: [
+          { tag: 'Your people', title: 'Your team.', body: 'We buy companies because of the people who built them, not to replace them.' },
+          { tag: 'Your identity', title: 'Your brand stays.', body: 'Your name, your product, your customer relationships continue as they are.' },
+          { tag: 'Your place', title: 'Your company stays here.', body: "We operate businesses where they are. We're building in Mexico, for the long term." },
+          { tag: 'Your future', title: 'We never resell.', body: 'Constellation companies are held permanently. No three-year exit, no second sale, no private-equity clock.' }
+        ],
+        diffEyebrow: 'The difference',
+        diffTitle: 'Why permanent capital is different.',
+        diffBody: "Most buyers have an exit in mind from the day they sign. We don't. As part of The Vertus Group — which has never sold a company and never will — and Constellation Software, with more than 1,000 software businesses worldwide, our model is to acquire good companies and keep them, helping them grow over decades rather than quarters.",
+        diffThemLabel: 'Most buyers',
+        diffThemHead: 'An exit on the clock',
+        diffThemBody: 'Resale, roll-up, a return to deliver to investors.',
+        diffUsLabel: 'Us',
+        diffUsHead: 'A home, kept',
+        diffUsBody: 'Acquire, steward, and grow the company over decades.',
+        mxEyebrow: 'Established in Mexico',
+        mxTitle: "We're here to stay.",
+        mxBody: "Vertus Mexico is an active, present owner in Mexico's vertical-market software landscape — with operating companies, teams still at the helm, and relationships built to last decades. Here's what the people who already work with us say.",
+        testimonials: [
+          { slotId: 'vx-test-founder', slotHint: 'Founder photo', quote: 'FOUNDER QUOTE — why they chose a permanent owner (2 sentences)', name: 'NAME · Founder, portfolio company' },
+          { slotId: 'vx-test-employee', slotHint: 'Employee photo', quote: 'EMPLOYEE QUOTE — how things changed (for the better) post-acquisition', name: 'NAME · Team lead, portfolio company' },
+          { slotId: 'vx-test-advisor', slotHint: 'Advisor photo', quote: 'M&A ADVISOR QUOTE — on the certainty and cleanliness of the process', name: 'NAME · M&A advisor' }
+        ],
+        teamEyebrow: 'The team',
+        teamTitle: 'Local presence in Mexico, backed by the full Vertus team.',
+        teamBody: 'Vertus Group Mexico operates directly and locally in Mexico — your point of contact is here, in your country and time zone. Behind it stands the full team at The Vertus Group: M&A, operations, finance, and legal specialists with decades of experience acquiring and growing vertical-market software companies across 36+ businesses.',
+        teamLinks: [
+          { label: 'Meet the Vertus team →', href: 'https://www.thevertusgroup.com/our-team.htm' },
+          { label: 'Vertus resources & news →', href: 'https://www.thevertusgroup.com/blog/' }
+        ],
+        stats: [
+          { value: '36+', label: 'portfolio companies', color: '#1A2E1A' },
+          { value: '1,000+', label: 'people across the ecosystem', color: '#1A2E1A' },
+          { value: '2003', label: 'since our first acquisition', color: '#1A2E1A' },
+          { value: '∞', label: 'ownership horizon', color: '#1A2E1A' }
+        ],
+        foundEyebrow: 'For founders',
+        foundTitle: 'What we look for.',
+        foundBody: "We acquire profitable, established vertical-market software companies and give them a permanent home. Here's what we look for.",
+        bizHead: 'Business profile',
+        bizItems: ['B2B software', 'SaaS or on-premise', 'Vertical-market focus', 'Mission-critical software', 'Proprietary solutions'],
+        finHead: 'Financial profile',
+        finItems: ['Majority recurring revenue', 'Breakeven or profitable', 'Low customer attrition'],
+        foundCtaQ: 'Curious what your company could be worth with a permanent owner?',
+        foundCtaNote: 'A first conversation is confidential and carries no obligation.',
+        faqEyebrow: 'Straight answers',
+        faqTitle: 'Your questions, answered honestly.',
+        faq: [
+          { q: 'Will you replace my team?', a: 'Operating teams are typically kept in place. You know your business. We focus on acquiring high-performing teams with deep industry knowledge.' },
+          { q: 'Will you move my company or merge it into something else?', a: "No. Your company keeps operating as itself, where it is, under its own brand. We don't consolidate businesses into one machine." },
+          { q: 'Will you sell it again in a few years?', a: "No. This is the core of how we're different. The Vertus Group has never sold a company and never will — we hold businesses permanently. There is no exit clock." },
+          { q: 'What happens to me after the sale?', a: "Some founders stay and keep leading with new support behind them; others step back over an agreed transition. We'll design it around what you want." },
+          { q: 'Is my information safe if I just want to explore?', a: "Yes. The first conversation is confidential and carries no obligation. Nothing is shared, and there's no pressure to proceed." }
+        ],
+        appEyebrow: 'Our approach',
+        appTitle: 'Our approach to a smooth acquisition.',
+        appBody: "We know your business took years of dedication to build, and we want to help secure its future and yours. Here's the path we walk together, transparent at every step.",
+        steps: [
+          { n: '1', title: 'Meet with us', body: "We start with a conversation. Our team listens, understands your vision, and addresses your concerns so you're comfortable at every step." },
+          { n: '2', title: 'Speak with an operator', body: "Meet professionals who've walked this path before. They'll bring clarity on the process and how your company can move to its next chapter seamlessly." },
+          { n: '3', title: 'Sign an NDA', body: 'Your information is safe with us. An NDA keeps your sensitive data confidential so you can explore a sale in a secure environment.' },
+          { n: '4', title: 'Discuss fit', body: "We believe in partnerships aligned with your goals. Let's explore how your business fits our long-term vision and what solutions suit your situation." },
+          { n: '5', title: 'Offer', body: "Receive a fair, transparent offer based on your software business's value, so you can make an informed decision." },
+          { n: '6', title: 'Due diligence', body: 'We examine the details thoroughly to ensure a smooth transition. Our careful approach is designed to keep surprises at bay.' },
+          { n: '7', title: 'Close', body: 'With the paperwork finalized, we close. The process is built to be efficient and clear, and to respect your timeline.' },
+          { n: '8', title: 'Integrate', body: 'Welcome to the Vertus family. Your company joins the portfolio and benefits from our resources, expertise, and lasting commitment to its growth.' }
+        ],
+        finalTitle: 'Thinking about the future of your company?',
+        finalBody: "Let's talk — confidentially, with no obligation. You'll speak directly with one of our operational or M&A leaders.",
+        whatsappLabel: 'Or message us on WhatsApp',
+        formName: 'Name', formCompany: 'Company', formEmail: 'Email', formMessage: 'Message', formSend: 'Send →',
+        formNote: 'Confidential. We only use this to reply to you.',
+        errName: 'Please enter your name.',
+        errEmail: 'Please enter a valid email.',
+        errMessage: 'Add a short message.',
+        formSuccess: "Thank you. We'll be in touch soon."
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
