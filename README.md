@@ -28,15 +28,37 @@ This is a **pnpm workspace monorepo**. The real work happens under `artifacts/`:
 ```bash
 pnpm install
 pnpm run typecheck          # typecheck all packages
-pnpm --filter @workspace/vertus-mexico dev     # run the landing page locally
+
+# Dev / build need PORT + BASE_PATH (see "Environment variables" below):
+PORT=5173 BASE_PATH=/ pnpm --filter @workspace/vertus-mexico dev     # run locally
+PORT=5173 BASE_PATH=/ pnpm --filter @workspace/vertus-mexico build   # production build
+
 pnpm --filter @workspace/vertus-mexico test    # Playwright layout tests
 ```
 
+## Environment variables
+
+Config comes from environment variables — copy the example files and adjust. The
+Vite config reads `PORT`/`BASE_PATH` directly from `process.env`, so they must be
+present in the environment (exported / set by your shell or host) for both `dev`
+and `build`; a `.env` file alone won't populate them.
+
+```bash
+cp artifacts/vertus-mexico/.env.example artifacts/vertus-mexico/.env
+cp artifacts/api-server/.env.example    artifacts/api-server/.env
+```
+
+| App | Required | Optional |
+| --- | --- | --- |
+| `vertus-mexico` (frontend) | `PORT`, `BASE_PATH` | `VITE_GTM_ID`, `VITE_SITE_URL` |
+| `api-server` | `PORT` | `NODE_ENV`, `LOG_LEVEL` |
+
 ## Secrets
 
-HubSpot credentials are **not** in this repo — they live in Replit Secrets (and
-should be provided as environment variables when running the api-server locally).
-Never commit a `.env`.
+HubSpot is reached through Replit's connector proxy (`@replit/connectors-sdk`), so
+there is **no** HubSpot token in the code — OAuth is injected by Replit. Running the
+api-server's HubSpot path outside Replit means adapting the proxy call in
+`artifacts/api-server/src/lib/hubspot.ts`. Never commit a `.env`.
 
 ## Deployment
 

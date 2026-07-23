@@ -59,7 +59,7 @@ function TestimonialCard({
   const attrStyle: CSSProperties = {
     fontFamily: "'Prompt',sans-serif",
     fontWeight: 500,
-    fontSize: featured ? "15px" : "14px",
+    fontSize: "14px",
     lineHeight: 1.5,
     color: "#33402F",
     textTransform: "uppercase",
@@ -84,9 +84,11 @@ function TestimonialCard({
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        padding: featured
-          ? "clamp(28px,6cqw,52px) clamp(24px,6cqw,56px)"
-          : "clamp(26px,6cqw,40px) clamp(24px,6cqw,42px)",
+        // Size everything off THIS card's width (not the section's), so the
+        // stacked cards on mobile look identical while the wider featured card
+        // naturally scales up on desktop.
+        containerType: "inline-size",
+        padding: "clamp(26px,6cqw,44px) clamp(24px,6cqw,48px)",
       }}
     >
       {watermark && (
@@ -97,9 +99,9 @@ function TestimonialCard({
           loading="lazy"
           style={{
             position: "absolute",
-            top: featured ? "34px" : "28px",
-            right: featured ? "clamp(-12px,4cqw,32px)" : "24px",
-            width: featured ? "min(520px,56cqw)" : "min(300px,50cqw)",
+            top: "clamp(24px,5cqw,40px)",
+            right: "clamp(16px,4cqw,34px)",
+            width: "min(500px,56cqw)",
             height: "auto",
             opacity: watermark.opacity,
             pointerEvents: "none",
@@ -112,32 +114,22 @@ function TestimonialCard({
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          paddingTop: featured
-            ? "clamp(60px,14cqw,88px)"
-            : "clamp(50px,12cqw,72px)",
+          paddingTop: "clamp(54px,14cqw,84px)",
         }}
       >
         <span
           aria-hidden="true"
           style={{
             position: "absolute",
-            left: featured
-              ? "clamp(-47px,calc(45px - 8.6cqw),-10px)"
-              : "clamp(-31px,calc(30px - 5.69cqw),-12px)",
-            top: featured
-              ? "clamp(-22px,calc(59px - 7.58cqw),22px)"
-              : "clamp(-18px,calc(51px - 6.4cqw),8px)",
+            left: "-0.04em",
+            top: "-0.08em",
             fontFamily: "Georgia,serif",
-            fontSize: featured
-              ? "clamp(150px,42cqw,400px)"
-              : "min(320px,44cqw)",
+            fontSize: "clamp(80px,26cqw,220px)",
             lineHeight: 1,
             color: "#8BC53F",
             opacity: 0.22,
             zIndex: 0,
             pointerEvents: "none",
-            width: "148px",
-            height: "151px",
           }}
         >
           {"“"}
@@ -148,12 +140,10 @@ function TestimonialCard({
             zIndex: 1,
             fontFamily: "'Newsreader',Georgia,serif",
             fontWeight: 500,
-            fontSize: featured
-              ? "clamp(21px,4.6cqw,29px)"
-              : "clamp(17px,4.4cqw,20px)",
-            lineHeight: featured ? 1.42 : 1.5,
+            fontSize: "clamp(18px,4.6cqw,28px)",
+            lineHeight: 1.5,
             color: "#2A3A26",
-            margin: featured ? "0 0 32px" : "0 0 28px",
+            margin: "0 0 28px",
           }}
         >
           {q.quote}

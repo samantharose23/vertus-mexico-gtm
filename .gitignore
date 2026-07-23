@@ -53,6 +53,9 @@ artifacts/vertus-mexico/test-results/
 .env
 .env.*
 *.local.env
+# …but keep the committed example env files (documentation, no secrets):
+!.env.example
+!**/.env.example
 
 # Build / test artifacts
 .vite/
